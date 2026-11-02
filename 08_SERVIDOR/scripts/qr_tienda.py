@@ -18,7 +18,7 @@ def install():
 
 
 def main():
-    url = sys.argv[1] if len(sys.argv) > 1 else "https://157-137-203-223.sslip.io/tienda.html"
+    url = sys.argv[1] if len(sys.argv) > 1 else "https://marketattack.duckdns.org/tienda.html"
     salida = sys.argv[2] if len(sys.argv) > 2 else "/tmp/qr.png"
     etiqueta = sys.argv[3] if len(sys.argv) > 3 else "MARKETATTACK"
     try:

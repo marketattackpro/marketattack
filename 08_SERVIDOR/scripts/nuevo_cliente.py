@@ -36,7 +36,7 @@ SCRIPTS = f"{BASE_PROY}/scripts"
 
 # Dominio público con el que se comparten la tienda y el QR.
 # Se puede cambiar sin tocar el código:  MA_URL_BASE="https://midominio.com" ...
-URL_BASE = (os.environ.get("MA_URL_BASE") or "https://157-137-203-223.sslip.io").rstrip("/")
+URL_BASE = (os.environ.get("MA_URL_BASE") or "https://marketattack.duckdns.org").rstrip("/")
 
 
 def slug(s):

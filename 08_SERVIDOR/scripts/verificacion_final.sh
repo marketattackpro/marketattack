@@ -18,12 +18,27 @@ done
 
 echo ""
 echo "── WEB ──"
+BASE=${BASE:-https://157-137-203-223.sslip.io}
 for u in / /tienda.html /kit.html; do
-  c=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "http://127.0.0.1$u")
+  c=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 "$BASE$u")
   [ "$c" = "200" ] && ok "$u = $c" || mal "$u = $c"
 done
-c=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://127.0.0.1/noexiste)
+c=$(curl -sk -o /dev/null -w '%{http_code}' --max-time 10 "$BASE/noexiste")
 [ "$c" = "404" ] && ok "/noexiste = 404 (correcto)" || mal "/noexiste = $c (debía ser 404)"
+
+echo ""
+echo "── CHAT IA ──"
+a=$(systemctl is-active marketattack-chat 2>/dev/null)
+[ "$a" = "active" ] && ok "marketattack-chat = $a" || mal "marketattack-chat = $a"
+h=$(curl -s --max-time 8 "$BASE/api/chat/health")
+echo "$h" | grep -q '"ok": true' && ok "backend /api/chat/health responde" || mal "backend /api/chat/health no responde"
+prueba=$(curl -s --max-time 30 -X POST "$BASE/api/chat" -H "Content-Type: application/json" \
+  -d '{"mensaje":"Responde solo: ok","negocio":{"nombre":"Prueba","menu":[]}}')
+if echo "$prueba" | grep -q '"respuesta"'; then
+  ok "IA real responde (proveedor externo)"
+else
+  echo "  aviso  la IA externa no respondió; el chat usa el respaldo local (no bloquea respaldos)"
+fi
 
 echo ""
 echo "── SEGURIDAD ──"
@@ -41,7 +56,7 @@ else
 fi
 
 # Llaves autorizadas: comparar HUELLAS reales, no comentarios ni cadenas inventadas.
-HUELLA_PC=SHA256:VbRrdAfJiujLH/aNxcyjKtOBxrcvcJXbMSlqqLpspvo
+HUELLA_PC=SHA256:cjHUVVGMuRKQCQ1hBN+h7OMsaie/asYOgtbVt97fTKw
 HUELLA_CEL=SHA256:9lI9c4iGJDIgw2av5ud6a7azsVBUgwA4XhzdlVgCcnw
 HUELLAS=$(sudo python3 -c "
 import subprocess
@@ -80,7 +95,11 @@ C=$(sudo find /var/backups/marketattack/kits -name '*.zip' | wc -l)
 [ "$A" -ge 1 ] && ok "vía A (disco VPS): $A respaldo(s)" || mal "vía A vacía"
 [ "$B" -ge 1 ] && ok "vía B (espejo):    $B respaldo(s)" || mal "vía B vacía"
 [ "$C" -ge 1 ] && ok "vía C (Telegram):  $C kit(s)" || mal "vía C vacía"
-ok "vía D (GitHub):    verificado por hash fuera del servidor"
+G=$(sudo ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -T git@github.com 2>&1 || true)
+case "$G" in
+  *"successfully authenticated"*) ok "vía D (GitHub): llave del VPS autorizada" ;;
+  *) echo "  aviso  vía D (GitHub): llave no autorizada (respaldo en GitHub inactivo)" ;;
+esac
 for V in /var/backups/marketattack/completos /root/marketattack-rescate; do
   if sudo find "$V" -name 'SHA256SUMS' | grep -q .; then :; fi
   r=$(sudo find "$V" -name 'completo_*.tar.gz' | sort -r | head -1)
@@ -103,12 +122,14 @@ echo ""
 echo "── CRON ──"
 CRON=$(sudo crontab -l)
 faltan=""
-for t in watchdog_marketattack backup_marketattack kit_recuperacion informe_diario \
-         respaldo_completo publicar_github verificar_respaldos verificacion_final; do
+for t in watchdog_marketattack backup_marketattack respaldo_diario_marketattack \
+         informe_diario verificar_respaldos verificacion_final; do
   echo "$CRON" | grep -q "$t" || faltan="$faltan $t"
 done
+# El respaldo diario agrupa: kit+Telegram (nube), completo A/B (local) y GitHub.
+[ -x /usr/local/bin/respaldo_diario_marketattack.sh ] || faltan="$faltan respaldo_diario_marketattack.sh"
 if [ -z "$faltan" ]; then
-  ok "las 8 reglas de cron estan activas"
+  ok "las 6 reglas de cron estan activas (respaldo diario = nube + local)"
 else
   mal "faltan reglas de cron:$faltan"
 fi
@@ -121,5 +142,5 @@ echo "  $(df -h / | awk 'NR==2{print $2}') total, $(df -h / | awk 'NR==2{print $
 
 echo ""
 echo "══════════════════════════════════════════"
-if [ "$f" -eq 0 ]; then echo " RESULTADO: TODO CORRECTO"; else echo " RESULTADO: $f FALLOS"; fi
+if [ "$f" -eq 0 ]; then echo " RESULTADO: TODO CORRECTO"; else echo " RESULTADO: $f FALLOS"; exit 1; fi
 echo "══════════════════════════════════════════"

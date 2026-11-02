@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=ubuntu
 WorkingDirectory=/home/personalamd/Documentos/Default Project
-Environment=OPENCODE_SERVER_PASSWORD=CAMBIAR_ESTA
+Environment=OPENCODE_SERVER_PASSWORD=[OCULTO]
 Environment=HOME=/home/ubuntu
 ExecStart=/usr/local/bin/opencode serve --port 4096 --hostname 127.0.0.1
 Restart=always

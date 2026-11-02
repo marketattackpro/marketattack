@@ -46,6 +46,10 @@ CHAT=$(sudo grep TELEGRAM_CHAT_ID "$CONF" | cut -d= -f2- | tr -d '"')
 echo "  chat_id actual: $CHAT"
 
 echo ""
+# se guarda el token saliente ANTES de escribir el nuevo: si se lee despues,
+# ya se perdio el viejo y la lista de rotadas queda inutil
+VIEJO=$(sudo grep TELEGRAM_TOKEN "$CONF" | cut -d= -f2- | tr -d '"')
+
 echo "4) guardando el token nuevo..."
 sudo sed -i "s|^TELEGRAM_TOKEN=.*|TELEGRAM_TOKEN=\"$NUEVO\"|" "$CONF"
 sudo chmod 600 "$CONF"
@@ -53,8 +57,20 @@ sudo grep -q 'TELEGRAM_TOKEN' "$CONF" && echo "  ✓ escrito" || { echo "  ✗ n
 
 echo ""
 echo "5) anotando el token viejo en la lista de rotadas..."
+# El token saliente puede seguir apareciendo en chats viejos o respaldos ya
+# hechos. Si queda anotado aqui, el generador del kit lo detecta y lo tapa.
 sudo touch /etc/marketattack/claves_rotadas.txt
 sudo chmod 600 /etc/marketattack/claves_rotadas.txt
+if [ -n "$VIEJO" ] && [ "$VIEJO" != "$NUEVO" ]; then
+  if sudo grep -qxF "$VIEJO" /etc/marketattack/claves_rotadas.txt; then
+    echo "  · el token viejo ya estaba anotado"
+  else
+    echo "$VIEJO" | sudo tee -a /etc/marketattack/claves_rotadas.txt >/dev/null
+    echo "  ✓ token viejo guardado (quedará fuera del kit y de los respaldos)"
+  fi
+else
+  echo "  · sin token previo que registrar"
+fi
 
 echo ""
 echo "6) reiniciando el puente..."

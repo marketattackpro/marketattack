@@ -1,0 +1,9 @@
+RESPALDO=20261102_1444
+SERVIDOR=149.130.190.118
+proyecto=/var/www/marketattack
+servicios:
+  nginx = active
+  opencode = active
+  puente-telegram = active
+tamanos:
+/dev/sda1        45G  6.2G   38G  15% /

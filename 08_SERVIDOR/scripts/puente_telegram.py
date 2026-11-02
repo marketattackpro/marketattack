@@ -547,7 +547,12 @@ def procesar(txt):
             sid = oc("POST", "/session", {"title": "MarketAttack"})["id"]
             open(SESS_FILE, "w").write(sid)
             return "✅ Conversación nueva."
-        return f"No conozco ese comando.\n\n{AYUDA}"
+        # Si no es un comando conocido, trátalo como conversación natural con el agente
+        tg("sendChatAction", chat_id=CHAT, action="typing")
+        r = oc("POST", f"/session/{sesion()}/message",
+               {"parts": [{"type": "text", "text": txt}]}, timeout=1800)
+        s = "\n".join(p.get("text", "") for p in r.get("parts", []) if p.get("type") == "text")
+        return s or "Listo. He ejecutado lo que pediste."
     auto = intento_prospecto(txt)
     if auto:
         return auto

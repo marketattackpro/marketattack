@@ -1,0 +1,8 @@
+# MARKETATTACK — tareas programadas
+0 3 * * * /usr/local/bin/backup_marketattack.sh
+*/5 * * * * /usr/local/bin/watchdog_marketattack.sh
+0 8 * * * /usr/local/bin/informe_diario.sh
+# ── respaldo diario (nube + local) a las 00:00 ──
+0 0 * * * /usr/local/bin/respaldo_diario_marketattack.sh >> /var/log/marketattack-respaldo.log 2>&1
+30 8 * * 0  /usr/local/bin/verificar_respaldos.sh >> /var/log/marketattack-respaldo.log 2>&1
+0 7 * * *   /usr/local/bin/verificacion_final.sh >> /var/log/marketattack-respaldo.log 2>&1

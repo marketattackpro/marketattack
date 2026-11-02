@@ -1,0 +1,16 @@
+[Unit]
+Description=Puente Telegram -> OpenCode (MARKETATTACK)
+After=network.target opencode.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/personalamd/Documentos/Default Project
+ExecStart=/usr/bin/python3 /usr/local/bin/puente_telegram.py
+Restart=always
+RestartSec=5
+StandardOutput=append:/var/log/puente_telegram.log
+StandardError=append:/var/log/puente_telegram.log
+
+[Install]
+WantedBy=multi-user.target

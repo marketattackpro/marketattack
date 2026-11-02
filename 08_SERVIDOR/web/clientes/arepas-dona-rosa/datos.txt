@@ -1,0 +1,12 @@
+Nombre: Arepas Doña Rosa
+WhatsApp: 3001234567
+Tagline: Las arepas del barrio, hechas a mano
+Horario: Lunes a domingo de 6:00 a. m. a 8:00 p. m.
+Zona: Carrera 7 # 23-45, Bosa La Esperanza, Bogotá
+
+- Arepas con Queso | $5.000 | Arepa de maíz asada, queso costeño fundido
+- Arepas Rellena de Pollo | $9.000 | Pollo desmechado, aguacate y salsa de la casa
+- Arepas con Chicharrón | $8.000 | Chicharron crujiente con suero costeño
+- Arepas Mixta | $12.000 | Pollo + chicharrón + queso (grande)
+- Jugo de Corozo | $4.000 | Natural, servido frío
+- Café con leche | $3.500 | Preparado al momento

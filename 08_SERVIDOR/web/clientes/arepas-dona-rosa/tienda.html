@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tienda online · MarketAttack</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e63946">
+<meta name="description" content="Las arepas del barrio, hechas a mano">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MarketAttack">
+<meta property="og:title" content="Arepas Doña Rosa">
+<meta property="og:description" content="Las arepas del barrio, hechas a mano">
+<meta property="og:image" content="https://157-137-203-223.sslip.io/clientes/arepas-dona-rosa/assets/portada.png">
+<meta property="og:url" content="https://157-137-203-223.sslip.io/clientes/arepas-dona-rosa/tienda.html">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Arepas Doña Rosa">
+<meta name="twitter:description" content="Las arepas del barrio, hechas a mano">
+<meta name="twitter:image" content="https://157-137-203-223.sslip.io/clientes/arepas-dona-rosa/assets/portada.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "Arepas Doña Rosa", "description": "Las arepas del barrio, hechas a mano", "telephone": "3001234567", "image": "https://157-137-203-223.sslip.io/clientes/arepas-dona-rosa/assets/portada.png", "url": "https://157-137-203-223.sslip.io/clientes/arepas-dona-rosa/tienda.html", "address": "Carrera 7 # 23-45, Bosa La Esperanza, Bogotá", "openingHours": "Lunes a domingo de 6:00 a. m. a 8:00 p. m."}</script>
+<style>
+.grid-menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:14px}
+.tarjeta-producto{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:6px}
+.tarjeta-producto .nombre{font-weight:700;color:#1d3557;font-size:1.02rem}
+.tarjeta-producto .desc{color:#666;font-size:.85rem;flex:1}
+.tarjeta-producto .precio{color:#e63946;font-weight:800;font-size:1.1rem}
+.tarjeta-producto .acciones{margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenedor-header">
+    <div class="logo">⚡ MARKETATTACK <span>· Tienda Demo IA</span></div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#chat" class="activo">Chat</a>
+      <a href="#panel">Panel</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#marketing">Marketing</a>
+    </nav>
+  </div>
+</header>
+
+<div class="contenedor">
+
+  <h1 class="titulo-seccion">🍽️ Arepas Doña Rosa — Asistente de atención y captación</h1>
+  <p class="subtitulo-seccion">Esta es una empresa ficticia de prueba. Prueba el flujo: pregunta, pide la promo, registra tus datos y mira el panel del "dueño".</p>
+
+  <div class="ma-acciones">
+    <span id="ma-estado" class="ma-estado"></span>
+    <button id="ma-compartir" class="chip" type="button">🔗 Compartir</button>
+    <a class="chip" href="assets/menu.png" target="_blank" rel="noopener">📄 Menú imprimible</a>
+  </div>
+  <div id="ma-mapa" class="ma-mapa"></div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs" role="tablist">
+    <button class="tab activo" data-tab="chat">💬 Chat del cliente</button>
+    <button class="tab" data-tab="menu">🛍️ Menú y pedidos</button>
+    <button class="tab" data-tab="panel">🏪 Panel (mini-CRM)</button>
+    <button class="tab" data-tab="dashboard">📊 Dashboard</button>
+    <button class="tab" data-tab="marketing">📣 Marketing IA</button>
+  </div>
+
+  <!-- PESTAÑA CHAT -->
+  <div class="pestana activa" id="chat">
+    <div class="ventana-chat">
+      <div class="cabecera-chat">
+        <div class="avatar">🍽️</div>
+        <div class="datos">
+          <div class="nombre">Arepas Doña Rosa</div>
+          <div class="estado-sitio"><span class="punto-en-linea"></span> En línea · responde al instante</div>
+        </div>
+      </div>
+      <div class="chat" id="chat-canvas"></div>
+      <div class="campo-chat">
+        <input type="text" id="entrada" placeholder="Escribe tu mensaje, ej: ¿qué venden?" autocomplete="off">
+        <button class="boton accion" onclick="enviarMensaje()" title="Enviar">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA MENÚ -->
+  <div class="pestana" id="menu">
+    <h2 class="titulo-seccion">🛍️ Nuestro menú</h2>
+    <p class="subtitulo-seccion">Elige lo que quieras y arma tu pedido. Al confirmar, se envía directo al WhatsApp del negocio.</p>
+    <div class="grid-menu" id="grid-menu"></div>
+  </div>
+
+  <!-- PESTAÑA PANEL -->
+  <div class="pestana" id="panel">
+    <div class="panel-card">
+      <h3>📥 Prospectos captados por el chat</h3>
+      <div class="filtros" id="filtros">
+        <button class="boton secundario" onclick="filtrar('todos')">Todos</button>
+        <button class="boton secundario" onclick="filtrar('nuevo')">Nuevos</button>
+        <button class="boton secundario" onclick="filtrar('contactado')">Contactados</button>
+        <button class="boton secundario" onclick="filtrar('vendido')">Vendidos</button>
+      </div>
+      <ul class="lista-prospectos" id="lista-prospectos">
+        <li class="vacio">Aún no hay prospectos. Pide una promo en el chat para captar el primero.</li>
+      </ul>
+      <button class="boton exito" onclick="exportarCSV()">⬇ Exportar CSV</button>
+      <button class="boton" onclick="limpiarProspectos()" style="margin-left:8px;background:#e63946;">Eliminar todos (demo)</button>
+    </div>
+    <div class="panel-card">
+      <h3>💡 Para probar la demo</h3>
+      <p>1. Ve a la pestaña 💬 Chat.<br>
+         2. Escribe: <em>"¿qué venden?"</em>, <em>"¿horarios?"</em> o directamente <em>"quiero la promo"</em>.<br>
+         3. Responde con un nombre, luego un teléfono y luego tu interés.<br>
+         4. Vuelve aquí: verás el prospecto registrado y podrás cambiar su estado (Nuevo → Contactado → Vendido).</p>
+    </div>
+  </div>
+
+  <!-- PESTAÑA DASHBOARD -->
+  <div class="pestana" id="dashboard">
+    <h2 class="titulo-seccion">📊 Dashboard del negocio</h2>
+    <div class="grid-metricas" id="metricas"></div>
+    <div class="panel-card">
+      <h3>📈 Entendiendo el valor para el dueño</h3>
+      <p>En un negocio real, estas cifras llegan solas: cuántos conversaron, cuántos dejaron sus datos y cuántos se convirtieron en venta. Eso es lo que MarketAttack visibiliza automáticamente.</p>
+    </div>
+  </div>
+
+  <!-- PESTAÑA MARKETING -->
+  <div class="pestana" id="marketing">
+    <div class="panel-card">
+      <h3>📣 Genera contenido desde una idea</h3>
+      <p>Escribe una promoción o noticia y MarketAttack genera textos para cada canal. Ejemplo: <em>"Tenemos 2x1 este fin de semana"</em>. <small style="color:#777;">(Demo con plantillas, la IA real llega en V4)</small></p>
+      <div class="gen-area">
+        <textarea id="idea-input" rows="3" placeholder="Describe tu promoción o novedad..."></textarea>
+        <button class="boton" onclick="generarMarketing()">✨ Generar contenido</button>
+      </div>
+      <div class="resultados-gen" id="resultados-gen"></div>
+    </div>
+  </div>
+
+</div>
+
+<a class="wa-flotante" id="wa-flotante" href="#" target="_blank" rel="noopener">💬 Pedir por WhatsApp</a>
+
+<script src="assets/demo.js"></script>
+<script>
+/* ============ ESTADO LOCAL DE LA PÁGINA ============ */
+let intencionActual = "";
+let ultimoTextoCliente = "";
+
+/* ============ ALMACENAMIENTO (usa la base del CLIENTE) ============ */
+function leerProspectosLocal() {
+  return MarketAttack.leerProspectos();
+}
+
+function buscarPorId(lista, id) {
+  return lista.find(p => p.id === id);
+}
+
+/* ============ CHAT ============ */
+function horaActual() {
+  return new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+}
+
+function agregarMensaje(tipo, texto, conChips, conEscribiendo) {
+  const chat = document.getElementById("chat-canvas");
+  const div = document.createElement("div");
+  div.className = "msg " + tipo;
+
+  if (tipo === "ia" || tipo === "sistema") {
+    const avatar = document.createElement("div");
+    avatar.className = "avatar-msg";
+    avatar.textContent = "🍽️";
+    div.appendChild(avatar);
+  }
+
+  const col = document.createElement("div");
+  col.style.maxWidth = "100%";
+
+  const burbuja = document.createElement("div");
+  burbuja.className = "burbuja";
+  burbuja.innerHTML = escapar(texto)
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/\n/g, "<br>");
+  col.appendChild(burbuja);
+
+  const hora = document.createElement("span");
+  hora.className = "hora";
+  hora.textContent = horaActual();
+  col.appendChild(hora);
+
+  div.appendChild(col);
+  chat.appendChild(div);
+
+  if (tipo === "cliente") {
+    const avatar = document.createElement("div");
+    avatar.className = "avatar-msg";
+    avatar.textContent = "👤";
+    div.appendChild(avatar);
+  }
+
+  if (conChips && Array.isArray(conChips) && conChips.length) {
+    const chips = document.createElement("div");
+    chips.className = "acciones-rapidas";
+    conChips.forEach(op => {
+      const b = document.createElement("button");
+      b.className = "chip";
+      b.textContent = op;
+      b.onclick = () => { agregarMensaje("cliente", op); procesarConsulta(op); };
+      chips.appendChild(b);
+    });
+    col.appendChild(chips);
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function mostrarEscribiendo() {
+  const chat = document.getElementById("chat-canvas");
+  const div = document.createElement("div");
+  div.className = "msg ia escribiendo-msg";
+  const avatar = document.createElement("div");
+  avatar.className = "avatar-msg";
+  avatar.textContent = "🍽️";
+  div.appendChild(avatar);
+  const burbuja = document.createElement("div");
+  burbuja.className = "burbuja escribiendo";
+  for (let i = 0; i < 3; i++) {
+    const punto = document.createElement("span");
+    punto.className = "punto";
+    burbuja.appendChild(punto);
+  }
+  div.appendChild(burbuja);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function escapar(t) {
+  const d = document.createElement("div");
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+function procesarConsulta(texto) {
+  ultimoTextoCliente = texto;
+  responderConEspera();
+}
+
+function responderConEspera() {
+  const espera = mostrarEscribiendo();
+  const retraso = 700 + Math.random() * 500;
+  setTimeout(() => {
+    espera.remove();
+    procesarRespuestaInterna();
+  }, retraso);
+}
+
+function respuestaIA(texto, chips) {
+  responderConEsperaCon(texto, chips);
+}
+
+function responderConEsperaCon(iaTexto, chips) {
+  const espera = mostrarEscribiendo();
+  setTimeout(() => {
+    espera.remove();
+    agregarMensaje("ia", iaTexto, chips);
+  }, 600 + Math.random() * 400);
+}
+
+/* Contexto del negocio para la IA real (solo datos públicos de la tienda) */
+function contextoNegocio() {
+  const c = (window.MarketAttack && MarketAttack.CLIENTE) || {};
+  const info = c.info || {};
+  return {
+    nombre: c.nombreComercial || document.title,
+    whatsapp: c.whatsapp || "",
+    tagline: (c.marca && c.marca.tagline) || "",
+    horario: info.horario || "",
+    ubicacion: info.ubicacion || "",
+    menu: (c.menu || []).slice(0, 40).map(m => ({ n: m.nombre, p: m.precio, d: m.desc })),
+    promos: (c.promociones || []).slice(0, 5).map(p => p.titulo + ": " + p.texto),
+    faqs: (c.preguntasFrecuentes || []).slice(0, 10).map(f => f.p + " -> " + f.r)
+  };
+}
+
+function respuestaLocal(texto) {
+  const intencion = detectarIntencion(texto);
+  intencionActual = intencion;
+  const respuesta = responderConIntencion(intencion, texto);
+  if (respuesta) agregarMensaje("ia", respuesta, sugerencias(intencion));
+}
+
+function procesarRespuestaInterna() {
+  const texto = ultimoTextoCliente || "";
+
+  // Si estamos capturando datos, el flujo es estricto
+  if (etapaCaptura) {
+    manejarCaptura(texto);
+    return;
+  }
+
+  // La promo conserva la captura de prospectos (mini-CRM)
+  if (detectarIntencion(texto) === "promocion") {
+    respuestaLocal(texto);
+    return;
+  }
+
+  // Sin soporte de red: responder con el motor local
+  if (typeof fetch !== "function") {
+    respuestaLocal(texto);
+    return;
+  }
+
+  const espera = mostrarEscribiendo();
+  const control = (typeof AbortController !== "undefined") ? new AbortController() : null;
+  const limite = control ? setTimeout(() => control.abort(), 25000) : null;
+
+  fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      mensaje: texto,
+      historial: (typeof conversacion !== "undefined" ? conversacion : []).slice(-8),
+      negocio: contextoNegocio()
+    }),
+    signal: control ? control.signal : undefined
+  })
+    .then(r => r.ok ? r.json() : Promise.reject(new Error("HTTP " + r.status)))
+    .then(d => {
+      if (!d || !d.respuesta) throw new Error("sin respuesta");
+      espera.remove();
+      agregarMensaje("ia", d.respuesta);
+      if (typeof conversacion !== "undefined") {
+        conversacion.push({ role: "user", content: texto });
+        conversacion.push({ role: "assistant", content: d.respuesta });
+        if (conversacion.length > 16) conversacion.splice(0, conversacion.length - 16);
+      }
+    })
+    .catch(() => {
+      espera.remove();
+      respuestaLocal(texto);
+    })
+    .finally(() => { if (limite) clearTimeout(limite); });
+}
+
+function sugerencias(intencion) {
+  if (!intencion) {
+    // Primera interacción: ayudamos a romper el hielo
+    return ["¿Qué venden?", "¿Horarios?", "¿Dónde están?", "Quiero la promo"];
+  }
+  switch (intencion) {
+    case "menu": return ["Quiero la promo", "¿Hacen domicilios?", "¿Cuánto demora el reparto?"];
+    case "promocion": return [];
+    case "saludo": return ["¿Qué venden?", "Quiero la promo", "¿Horarios?"];
+    case "pedido": return ["Me interesa el combo familiar", "¿Aceptan tarjeta?"];
+    case "pago": return ["Hace un pedido", "Quiero la promo"];
+    default: return [];
+  }
+}
+
+function manejarCaptura(texto) {
+  if (etapaCaptura === "nombre") {
+    if (texto.trim().length < 2) {
+      respuestaIA("Disculpa, ¿cuál es tu nombre? 😊");
+      return;
+    }
+    prospectoParcial.nombre = texto.trim();
+    etapaCaptura = "telefono";
+    respuestaIA("¡Gracias " + prospectoParcial.nombre + "! 📱 Ahora me compartes tu **NÚMERO DE CELULAR** para contactarte.");
+    return;
+  }
+  if (etapaCaptura === "telefono") {
+    const num = extraerNumero(texto);
+    if (!num) {
+      respuestaIA("Ese número no parece valido 😅. Solo necesito tus dígitos para contactarte. ¿Me lo repites?");
+      return;
+    }
+    prospectoParcial.telefono = num;
+    etapaCaptura = "interes";
+    respuestaIA("¡Genial! 🎉 Y para terminar: ¿qué es lo que más te interesa de " + MarketAttack.CLIENTE.nombreComercial + "? (ej: las promociones, un combo, el domicilio...)");
+    return;
+  }
+  if (etapaCaptura === "interes") {
+    prospectoParcial.interesResumen = texto.trim() || "";
+    guardarProspectoLocal();
+  }
+}
+
+function guardarProspectoLocal() {
+  const lista = leerProspectosLocal();
+  lista.forEach((p, i) => { if (!p.id) p.id = Date.now() + "-" + i; });
+  const nuevo = {
+    id: Date.now() + "-" + lista.length,
+    ...prospectoParcial,
+    estado: "nuevo",
+    fecha: new Date().toLocaleString("es-CO")
+  };
+  lista.push(nuevo);
+  MarketAttack.guardarListaProspectos(lista);
+  const nombre = prospectoParcial.nombre;
+  etapaCaptura = null;
+  prospectoParcial = {};
+  respuestaIA("✅ ¡Listo " + nombre + "! Tu información quedó registrada y el restaurante ya recibió tu oportunidad. En breve te contactamos por WhatsApp. ¡Gracias por preferir " + MarketAttack.CLIENTE.nombreComercial + "! 🍽️");
+  actualizarPanel();
+  actualizarDashboard();
+}
+
+function enviarMensaje() {
+  const input = document.getElementById("entrada");
+  const texto = input.value.trim();
+  if (!texto) return;
+  agregarMensaje("cliente", texto);
+  input.value = "";
+  procesarConsulta(texto);
+}
+
+/* ============ PANEL (mini-CRM) ============ */
+let filtroActual = "todos";
+
+function actualizarPanel() {
+  const lista = MarketAttack.idsUnicos();
+  const ul = document.getElementById("lista-prospectos");
+  ul.innerHTML = "";
+  const filtrada = filtroActual === "todos" ? lista : lista.filter(p => p.estado === filtroActual);
+
+  if (filtrada.length === 0) {
+    ul.innerHTML = '<li class="vacio">No hay prospectos' + (filtroActual !== "todos" ? " en este estado" : "") + '.</li>';
+    return;
+  }
+
+  const etiquetas = { nuevo: "Nuevo", contactado: "Contactado", vendido: "Vendido" };
+
+  filtrada.forEach(p => {
+    const li = document.createElement("li");
+    li.innerHTML =
+      '<div class="info"><strong>' + escapar(p.nombre || "Sin nombre") + '</strong> — ' +
+      escapar(p.telefono || "-") + '<br><small style="color:#777;">Interés: ' +
+      escapar(p.interes || p.interesResumen || "-") + ' · ' + escapar(p.fecha || "-") + '</small></div>';
+
+    const sel = document.createElement("select");
+    sel.className = "estado " + p.estado;
+    Object.keys(etiquetas).forEach(k => {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = etiquetas[k];
+      if (k === p.estado) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => {
+      sel.className = "estado " + sel.value;
+      MarketAttack.cambiarEstadoProspecto(p.id, sel.value);
+      actualizarDashboard();
+    };
+
+    const btn = document.createElement("button");
+    btn.textContent = "✕";
+    btn.onclick = () => { MarketAttack.eliminarProspecto(p.id); actualizarPanel(); actualizarDashboard(); };
+    btn.style.cssText = "border:none;background:transparent;cursor:pointer;color:#e63946;font-weight:700;";
+
+    const ctrl = document.createElement("div");
+    ctrl.style.cssText = "display:flex;gap:6px;align-items:center;";
+    ctrl.appendChild(sel);
+    ctrl.appendChild(btn);
+    li.appendChild(ctrl);
+    ul.appendChild(li);
+  });
+}
+
+function filtrar(estado) {
+  filtroActual = estado;
+  document.querySelectorAll("#filtros .boton").forEach(b => b.removeAttribute("style"));
+  actualizarPanel();
+}
+
+function exportarCSV() {
+  const lista = MarketAttack.idsUnicos();
+  if (!lista.length) { alert("No hay prospectos para exportar."); return; }
+  const filas = [["Nombre", "Teléfono", "Interés", "Estado", "Fecha"]];
+  lista.forEach(p => filas.push([p.nombre, p.telefono, p.interes || "", p.estado, p.fecha]));
+  const csv = "\uFEFF" + filas.map(f => f.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "prospectos_" + MarketAttack.CLIENTE.nombreInterno + ".csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function limpiarProspectos() {
+  if (!confirm("¿Seguro que quieres eliminar todos los prospectos de la demo?")) return;
+  MarketAttack.limpiarProspectos();
+  actualizarPanel();
+  actualizarDashboard();
+}
+
+/* ============ DASHBOARD ============ */
+function actualizarDashboard() {
+  const lista = MarketAttack.idsUnicos();
+  const nuevos = lista.filter(p => p.estado === "nuevo").length;
+  const contactados = lista.filter(p => p.estado === "contactado").length;
+  const vendidos = lista.filter(p => p.estado === "vendido").length;
+  const total = lista.length;
+  const conversion = total ? Math.round((vendidos / total) * 100) : 0;
+
+  const c = document.getElementById("metricas");
+  c.innerHTML = [
+    { n: total, e: "Prospectos totales" },
+    { n: nuevos, e: "Nuevos por atender" },
+    { n: contactados, e: "Contactados" },
+    { n: vendidos, e: "Vendidos" },
+    { n: conversion + "%", e: "Conversión" }
+  ].map(m => '<div class="metrica"><div class="numero">' + m.n + '</div><div class="etiqueta">' + m.e + "</div></div>").join("");
+}
+
+/* ============ MARKETING ============ */
+function generarMarketing() {
+  const idea = document.getElementById("idea-input").value.trim();
+  if (!idea) { alert("Escribe primero la promoción o novedad."); return; }
+  const textos = MarketAttack.generarContenido(idea);
+  const cont = document.getElementById("resultados-gen");
+  cont.innerHTML = "";
+  textos.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "gen-bloque";
+    div.innerHTML = '<h4>' + t.canal + '</h4><textarea rows="4" readonly>' + escapar(t.texto) + '</textarea><button class="boton" style="margin-top:8px;" onclick="copiarTexto(this)">📋 Copiar</button>';
+    cont.appendChild(div);
+  });
+  cont.insertAdjacentHTML("afterbegin",
+    '<div class="gen-bloque" style="background:#eafaf1;border:1px solid #a9dfbf;"><span class="verde">✓ Generado por MarketAttack.</span> Recuerden: IA genera → humano revisa → humano aprueba → se publica. <small style="color:#777;">(Demo con plantillas, no es IA real aún)</small></div>');
+}
+
+function copiarTexto(btn) {
+  const ta = btn.parentElement.querySelector("textarea");
+  ta.select();
+  document.execCommand("copy");
+  btn.textContent = "✓ Copiado";
+  setTimeout(() => btn.textContent = "📋 Copiar", 1500);
+}
+
+/* ============ MENÚ / PRODUCTOS ============ */
+function renderMenu() {
+  const cont = document.getElementById("grid-menu");
+  if (!cont) return;
+  const menu = MarketAttack.CLIENTE.menu || [];
+  cont.innerHTML = "";
+  menu.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "tarjeta-producto";
+    card.setAttribute("data-producto", "1");
+    card.innerHTML =
+      '<div class="nombre">' + escapar(m.nombre) + '</div>' +
+      '<div class="desc">' + escapar(m.desc || "") + '</div>' +
+      '<div class="precio">' + escapar(m.precio) + '</div>';
+    const acc = document.createElement("div");
+    acc.className = "acciones";
+    const btn = document.createElement("button");
+    btn.className = "boton";
+    btn.textContent = "🛒 Agregar";
+    btn.onclick = () => {
+      if (window.MarketAttackCarrito) window.MarketAttackCarrito.agregar(m.nombre, m.precio);
+      else alert("Carrito no disponible.");
+    };
+    acc.appendChild(btn);
+    card.appendChild(acc);
+    cont.appendChild(card);
+  });
+}
+
+/* ============ TABS ============ */
+(function tabs() {
+  const tabs = document.querySelectorAll(".tab");
+  const pestanas = document.querySelectorAll(".pestana");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("activo"));
+      pestanas.forEach(p => p.classList.remove("activa"));
+      tab.classList.add("activo");
+      document.getElementById(tab.dataset.tab).classList.add("activa");
+    });
+  });
+})();
+
+/* ============ INICIO ============ */
+(function iniciar() {
+  actualizarPanel();
+  actualizarDashboard();
+  renderMenu();
+  (function waFlotante() {
+    var el = document.getElementById("wa-flotante");
+    if (!el) return;
+    var n = String(MarketAttack.CLIENTE.whatsapp || "").replace(/[^\d]/g, "");
+    if (n.length === 10 && n.charAt(0) === "3") n = "57" + n;
+    el.href = "https://wa.me/" + n;
+  })();
+  const sugerencias = ["¿Qué venden?", "¿Horarios?", "¿Dónde están?", "Quiero la promo"];
+  agregarMensaje("ia", "¡Hola! Soy el asistente de **🍽️ " + MarketAttack.CLIENTE.nombreComercial + "** 😊 Puedo decirte el menú, precios, horarios, ubicación o contarte las promociones. ¿Qué deseas saber?", sugerencias);
+  document.getElementById("entrada").addEventListener("keydown", e => { if (e.key === "Enter") enviarMensaje(); });
+})();
+</script>
+
+  <script src="assets/carrito.js"></script>
+</body>
+</html>

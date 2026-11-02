@@ -10,7 +10,7 @@ exec 9>"$LOCK" || exit 0
 flock -n 9 || exit 0
 
 W=/tmp/kit
-IP=149.130.190.118
+IP=157.137.203.223
 FECHA=$(date +%Y%m%d_%H%M)
 DIR="$W/kit_$FECHA"
 mkdir -p "$DIR"/{chat,config,scripts,estado}
@@ -99,7 +99,7 @@ TOKEN_ACTUAL=$(sudo grep TELEGRAM_TOKEN /etc/marketattack/telegram.conf 2>/dev/n
 # llaves privadas reales, la clave vigente, el token vigente y las ya rotadas.
 # Los patrones genericos van aparte en SOSPECHOSO: solo avisan, nunca tapan,
 # porque un token de ejemplo en la documentacion no es una fuga real.
-SECRETO="-----BEGIN[A-Z ]*PRIVATE KEY-----|OPENCODE_SERVER_PASSWORD=[A-Za-z0-9]|TELEGRAM_TOKEN=[0-9]"
+SECRETO="-----BEGIN[A-Z ]*PRIVATE KEY-----|OPENCODE_SERVER_PASSWORD=[A-Za-z0-9]|TELEGRAM_TOKEN=[0-9]|gsk_[A-Za-z0-9]{40,}"
 SOSPECHOSO="[0-9]{8,10}:[A-Za-z0-9_-]{35}|gh[pousr]_[A-Za-z0-9]{20,}|sk-[A-Za-z0-9_-]{20,}"
 esc() { printf '%s' "$1" | sed 's/[.[\*^$]/\\&/g'; }
 [ -n "$CLAVE_ACTUAL" ] && SECRETO="$SECRETO|$(esc "$CLAVE_ACTUAL")"
@@ -155,7 +155,7 @@ PASO 1. Copia CONTEXTO.md y chat/conversacion.md a una carpeta
         de tu computadora.
 
 PASO 2. En la terminal, mira cómo sigue el servidor:
-        ssh -i ~/.ssh/ma_celular ubuntu@149.130.190.118
+        ssh -i ~/.ssh/ma_celular ubuntu@157.137.203.223
         systemctl status opencode puente-telegram
         curl -s -o /dev/null -w "%{http_code}\n" http://127.0.0.1/tienda.html
 
@@ -171,6 +171,23 @@ PASO 5. Si el opencode se reinició y perdió la sesión, crea una
         "Lee CONTEXTO.md y chat/conversacion.md. Este es el estado
          de MARKETATTACK. Retomamos desde aquí."
 
+PASO 6. Chat con IA real (si el servidor se rehizo):
+        - Instala el backend:
+            sudo cp scripts/chat_ia.py /usr/local/bin/marketattack_chat.py
+            sudo chmod 755 /usr/local/bin/marketattack_chat.py
+        - Crea la clave de IA (NO viene en el kit):
+            sudo nano /etc/marketattack/ia.conf
+            # contenido:
+            # IA_PROVEEDOR="groq"
+            # IA_MODELO="openai/gpt-oss-120b"
+            # IA_API_KEY="gsk_... (se genera en console.groq.com)"
+            sudo chmod 640 /etc/marketattack/ia.conf
+            sudo chown root:www-data /etc/marketattack/ia.conf
+        - Activa el servicio:
+            sudo systemctl enable --now marketattack-chat
+        - nginx debe tener: location ^~ /api/chat { proxy_pass http://127.0.0.1:8787; }
+        - Comprueba: curl -s https://TU-DOMINIO/api/chat/health
+
 ──────────────────────────────────────────────────────────────
 ⚠ LOS SECRETOS NO ESTÁN AQUÍ (a propósito)
 ──────────────────────────────────────────────────────────────
@@ -180,13 +197,14 @@ quien lo lea entra a tu servidor.
 
 Dónde están de verdad (solo en el VPS):
   Token del bot   → /etc/marketattack/telegram.conf  (permisos 600)
+  Clave de IA     → /etc/marketattack/ia.conf        (permisos 640 root:www-data)
   Clave opencode  → /etc/systemd/system/opencode.service
                     copia legible: sudo cat /root/CLAVE_OPENCODE.txt
   Llave SSH PC    → tu computadora, ~/.ssh/
   Llave del celular → tu celular, ~/.ssh/ma_celular
 
 COMO OBTENERLOS (si realmente los necesitas):
-  ssh -i <tu-llave> ubuntu@149.130.190.118
+  ssh -i <tu-llave> ubuntu@157.137.203.223
   sudo grep TELEGRAM /etc/marketattack/telegram.conf
   sudo grep PASSWORD /etc/systemd/system/opencode.service
 GUIA

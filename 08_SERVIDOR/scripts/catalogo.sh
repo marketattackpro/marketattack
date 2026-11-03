@@ -29,7 +29,7 @@ salones de belleza, ferroviarios y cualquier negocio que hoy
 responde mensajes a mano.
 
 <b>Cómo se ve</b>
-  https://marketattack.netlify.app/tienda.html
+  https://marketattack.duckdns.org/tienda.html
   → Toca "Probar la demo" y escríbele. Funciona.
 
 <b>Instalación</b>
@@ -91,6 +91,6 @@ cat <<'PR'
 Todos incluyen: instalación, capacitación y soporte por WhatsApp.
 Sin permanencia. Si no te sirve, cancelas.
 
-<i>Precios en pesos colombianos. Factura issued electrónicamente.</i>
+<i>Precios en pesos colombianos. Factura electrónica disponible.</i>
 PR
 }

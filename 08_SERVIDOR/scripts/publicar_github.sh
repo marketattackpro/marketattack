@@ -87,6 +87,10 @@ sudo bash -c "
   git config core.safecrlf false
   git remote set-url origin '$REMOTO'
   git checkout -q -B main
+  # si alguien subió cambios a GitHub (por ejemplo, un workflow), traerlos antes
+  if git fetch -q origin main 2>/dev/null; then
+    if ! git rebase -q origin/main 2>/dev/null; then git rebase --abort 2>/dev/null; fi
+  fi
   # nunca borrar el .gitignore del repositorio: solo añadir lo que falte
   for p in '*.db' '*.zip' '*.tar.gz' '*.key' '*.pem' '.env'; do
     grep -qxF \"\$p\" .gitignore 2>/dev/null || printf '%s\n' \"\$p\" >> .gitignore
@@ -97,7 +101,13 @@ sudo bash -c "
   if git push -q origin main; then
     echo '  ✓ empujado a GitHub (rama main)'
   else
-    echo '  ✗ no se pudo empujar'
+    # segundo intento: sincronizar con lo que haya en GitHub y volver a subir
+    if git fetch -q origin main 2>/dev/null && git rebase -q origin/main 2>/dev/null && git push -q origin main; then
+      echo '  ✓ empujado a GitHub (rama main, tras sincronizar)'
+    else
+      git rebase --abort 2>/dev/null || true
+      echo '  ✗ no se pudo empujar'
+    fi
   fi
 " || echo "  ⚠ el espejo no se pudo actualizar"
 

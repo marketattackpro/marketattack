@@ -93,4 +93,10 @@ Sin permanencia. Si no te sirve, cancelas.
 
 <i>Precios en pesos colombianos. Factura electrónica disponible.</i>
 PR
+# Los datos de pago viven fuera del script (no se publican en el espejo de GitHub)
+if [ -r /etc/marketattack/pagos.conf ]; then
+  . /etc/marketattack/pagos.conf
+  echo ""
+  echo "💳 <b>Pago:</b> Nequi/Daviplata ${PAGO_NEQUI} — ${PAGO_TITULAR}"
+fi
 }

@@ -1,5 +1,5 @@
-RESPALDO=20261103_1607
-SERVIDOR=149.130.190.118
+RESPALDO=20261103_1614
+SERVIDOR=157.137.203.223
 proyecto=/var/www/marketattack
 servicios:
   nginx = active

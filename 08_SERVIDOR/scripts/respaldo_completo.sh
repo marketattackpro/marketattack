@@ -43,6 +43,19 @@ mkdir -p "$W/contenido/scripts"
 sudo cp /usr/local/bin/*.sh /usr/local/bin/*.py /usr/local/bin/PEGAME_ESTO_EN_EL_CHAT.txt "$W/contenido/scripts/" 2>/dev/null
 log "scripts: $(ls -1 $W/contenido/scripts | wc -l) archivos"
 
+# 3b) proyecto: plantilla, clientes y documentos (para poder crear clientes
+#     nuevos después de restaurar, no solo levantar el sitio)
+PROY="/home/personalamd/Documentos/Default Project"
+if [ -d "$PROY" ]; then
+  for d in 02_DEMO 05_CLIENTES 07_COBROS 05_OPERACION 01_DOCUMENTACION; do
+    [ -d "$PROY/$d" ] && cp -a "$PROY/$d" "$W/contenido/" 2>/dev/null
+  done
+  for f in CONTEXTO.md MONITOREO.md; do
+    [ -f "$PROY/$f" ] && cp -a "$PROY/$f" "$W/contenido/" 2>/dev/null
+  done
+  log "proyecto: plantilla $(du -sh "$W/contenido/02_DEMO" 2>/dev/null | cut -f1) + $(ls -1 "$W/contenido/05_CLIENTES" 2>/dev/null | wc -l) carpeta(s) de clientes"
+fi
+
 # 4) configuración saneada (nunca con secretos)
 mkdir -p "$W/contenido/config"
 sudo cp /etc/marketattack/telegram.conf "$W/contenido/config/telegram.conf.EJEMPLO" 2>/dev/null
@@ -57,7 +70,7 @@ log "config: $(ls -1 $W/contenido/config | wc -l) archivos (saneados)"
 # 5) manifiesto del estado del sistema
 {
   echo "RESPALDO=$TS"
-  echo "SERVIDOR=149.130.190.118"
+  echo "SERVIDOR=157.137.203.223"
   echo "proyecto=/var/www/marketattack"
   echo "servicios:"; for s in nginx opencode puente-telegram; do
     echo "  $s = $(systemctl is-active $s 2>/dev/null)"; done

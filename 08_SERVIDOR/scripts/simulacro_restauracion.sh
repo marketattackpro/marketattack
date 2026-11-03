@@ -58,7 +58,7 @@ for f in \
   contenido/02_DEMO/index.html \
   contenido/05_CLIENTES
 do
-  if [ -f "$DEST/$f" ]; then echo "  ok $f"
+  if [ -e "$DEST/$f" ]; then echo "  ok $f"
   else echo "  ✗ falta $f"; fallos=$((fallos+1)); fi
 done
 

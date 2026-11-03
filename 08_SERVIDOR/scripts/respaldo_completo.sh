@@ -13,6 +13,7 @@ BASE=/var/backups/marketattack/completos
 ESPEJO=/root/marketattack-rescate
 DIAS=14
 W=/tmp/rsp_$TS
+PROY="/home/personalamd/Documentos/Default Project"
 
 log(){ echo "   $1"; }
 
@@ -41,11 +42,14 @@ sudo chown -R ubuntu:ubuntu "$W" 2>/dev/null
 # 3) scripts del servidor
 mkdir -p "$W/contenido/scripts"
 sudo cp /usr/local/bin/*.sh /usr/local/bin/*.py /usr/local/bin/PEGAME_ESTO_EN_EL_CHAT.txt "$W/contenido/scripts/" 2>/dev/null
+# helpers que viven en el proyecto y no en /usr/local/bin (portada, menú, etc.)
+if [ -d "$PROY/scripts" ]; then
+  cp -an "$PROY/scripts/." "$W/contenido/scripts/" 2>/dev/null || true
+fi
 log "scripts: $(ls -1 $W/contenido/scripts | wc -l) archivos"
 
 # 3b) proyecto: plantilla, clientes y documentos (para poder crear clientes
 #     nuevos después de restaurar, no solo levantar el sitio)
-PROY="/home/personalamd/Documentos/Default Project"
 if [ -d "$PROY" ]; then
   for d in 02_DEMO 05_CLIENTES 07_COBROS 05_OPERACION 01_DOCUMENTACION; do
     [ -d "$PROY/$d" ] && cp -a "$PROY/$d" "$W/contenido/" 2>/dev/null

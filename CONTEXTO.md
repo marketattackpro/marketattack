@@ -767,6 +767,15 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
   actualización no se veía. Ahora JS/CSS se revalidan siempre (`no-cache`) y
   las imágenes duran 1 hora. Los cambios se ven al recargar.
 
+### Caché y espejo público de GitHub
+- nginx guardaba JS/CSS **7 días**, así que una actualización no se veía.
+  Ahora JS/CSS se revalidan siempre (`no-cache`) y las imágenes duran 1 hora.
+- El espejo de GitHub ahora publica también `02_DEMO`, `05_OPERACION` y
+  `10_LEGAL` (antes el motor del repo estaba viejo).
+- **Privacidad:** el repositorio es público, así que el espejo **excluye las
+  carpetas de clientes** (`web/clientes` y todo `05_CLIENTES` que no sea
+  plantilla/ejemplo). Los datos de clientes solo van en los respaldos privados.
+
 ### Reglas de oro que se mantienen
 - No se publica tienda real sin el primer mes pagado.
 - Un respaldo solo vale si restaura: el ensayo es mensual.

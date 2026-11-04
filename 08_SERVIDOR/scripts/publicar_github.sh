@@ -68,12 +68,38 @@ fi
 
 # ── copiar el contenido del respaldo (sin borrar archivos del repo) ──
 sudo mkdir -p "$REPO/$DESTINO"
-for d in scripts config web; do
+for d in scripts config web 02_DEMO 05_OPERACION 10_LEGAL; do
   if [ -d "/tmp/pub/contenido/$d" ]; then
     sudo mkdir -p "$REPO/$DESTINO/$d"
     sudo rsync -a "/tmp/pub/contenido/$d/" "$REPO/$DESTINO/$d/"
   fi
 done
+# plantillas de cliente (NUNCA carpetas de clientes reales: el repo es público)
+for d in plantilla ejemplo; do
+  if [ -d "/tmp/pub/contenido/05_CLIENTES/$d" ]; then
+    sudo mkdir -p "$REPO/05_CLIENTES/$d"
+    sudo rsync -a "/tmp/pub/contenido/05_CLIENTES/$d/" "$REPO/05_CLIENTES/$d/"
+  fi
+done
+sudo cp /tmp/pub/contenido/CONTEXTO.md "$REPO/CONTEXTO.md" 2>/dev/null
+sudo cp /tmp/pub/contenido/MONITOREO.md "$REPO/MONITOREO.md" 2>/dev/null
+
+# Espejo público (demo y documentos): mismas versiones que el servidor
+for d in 02_DEMO 05_OPERACION 10_LEGAL; do
+  if [ -d "/tmp/pub/contenido/$d" ]; then
+    sudo mkdir -p "$REPO/$d"
+    sudo rsync -a "/tmp/pub/contenido/$d/" "$REPO/$d/"
+  fi
+done
+
+# ── privacidad: el repositorio es PÚBLICO ──
+# Nunca se publican carpetas de clientes (nombre, WhatsApp, catálogo, dirección).
+# Los datos de clientes solo viven en los respaldos privados (VPS/PC/Telegram).
+sudo rm -rf "$REPO/$DESTINO/web/clientes"
+if [ -d "$REPO/05_CLIENTES" ]; then
+  sudo find "$REPO/05_CLIENTES" -mindepth 1 -maxdepth 1 -type d \
+    ! -name plantilla ! -name ejemplo -exec rm -rf {} + 2>/dev/null
+fi
 sudo cp /tmp/pub/ESTADO.txt "$REPO/$DESTINO/ESTADO.txt" 2>/dev/null
 sudo cp /tmp/pub/SHA256SUMS "$REPO/$DESTINO/SHA256SUMS" 2>/dev/null
 

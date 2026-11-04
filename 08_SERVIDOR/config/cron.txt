@@ -8,3 +8,4 @@
 0 7 * * *   /usr/local/bin/verificacion_final.sh >> /var/log/marketattack-respaldo.log 2>&1
 @reboot sleep 45 && /usr/local/bin/duckdns_actualizar.sh >/dev/null 2>&1
 */30 * * * * /usr/local/bin/duckdns_actualizar.sh >/dev/null 2>&1
+0 9 1 * * /usr/local/bin/simulacro_restauracion.sh >> /var/log/marketattack-respaldo.log 2>&1

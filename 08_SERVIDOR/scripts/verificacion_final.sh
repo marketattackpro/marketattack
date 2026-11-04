@@ -123,13 +123,14 @@ echo "── CRON ──"
 CRON=$(sudo crontab -l)
 faltan=""
 for t in watchdog_marketattack backup_marketattack respaldo_diario_marketattack \
-         informe_diario verificar_respaldos verificacion_final duckdns_actualizar; do
+         informe_diario verificar_respaldos verificacion_final duckdns_actualizar \
+         simulacro_restauracion; do
   echo "$CRON" | grep -q "$t" || faltan="$faltan $t"
 done
 # El respaldo diario agrupa: kit+Telegram (nube), completo A/B (local) y GitHub.
 [ -x /usr/local/bin/respaldo_diario_marketattack.sh ] || faltan="$faltan respaldo_diario_marketattack.sh"
 if [ -z "$faltan" ]; then
-  ok "las 7 reglas de cron estan activas (respaldo diario = nube + local)"
+  ok "las 8 reglas de cron estan activas (respaldo diario = nube + local)"
 else
   mal "faltan reglas de cron:$faltan"
 fi

@@ -703,7 +703,7 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
 - **`prueba_aceptacion.sh`** (nuevo, en `/usr/local/bin` y en `scripts/`):
   genera un cliente real, corre el verificador, comprueba contenido, QR, menú,
   PWA, chat con IA (local y por internet) y recibo; luego borra la prueba y
-  confirma que el sitio y la tienda real siguen bien.
+  confirma que el sitio y la tienda demo siguen bien.
 - **Resultado final:** `ACEPTACIÓN COMPLETA — TODO FUNCIONA` en **2 s**.
 - Se corre cuando se quiera: `sudo /usr/local/bin/prueba_aceptacion.sh`.
 
@@ -735,6 +735,15 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
 - **Pendiente honesto:** el panel de prospectos y el resumen volverán cuando
   exista un backend real (hoy son por navegador). Por eso el plan Esencial ya
   no promete “panel” en las condiciones.
+
+### Arepas Doña Rosa es la DEMO comercial (no un cliente)
+- Es el **ejemplo** que se le muestra al prospecto: catálogo, carrito, chat y QR
+  funcionando. No se trata como cliente real.
+- Lleva una barra discreta arriba: **“🧪 Tienda de ejemplo · así se vería la
+  tuya”** con un botón **“Quiero una así”** que abre el WhatsApp real
+  (323 331 6186). Así la demo también sirve para captar interesados.
+- Cuando entre un cliente de verdad se crea con **su** nombre, su WhatsApp y su
+  catálogo; no se reutiliza la demo.
 
 ### Chat con IA
 - La tienda envía **nombre, horario, ubicación, menú, promos y FAQs**.

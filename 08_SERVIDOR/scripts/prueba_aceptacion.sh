@@ -193,7 +193,7 @@ c=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://127.0.0.1/clien
 c=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://127.0.0.1/")
 [ "$c" = "200" ] && ok "sitio principal sigue 200" || mal "sitio principal $c"
 c=$(curl -s -o /dev/null -w "%{http_code}" -L --max-time 15 "$URL_BASE/clientes/arepas-dona-rosa/tienda.html")
-[ "$c" = "200" ] && ok "tienda real (Doña Rosa) sigue 200" || mal "tienda real $c"
+[ "$c" = "200" ] && ok "tienda demo (Doña Rosa) sigue 200" || mal "tienda demo $c"
 SAL=$(/usr/local/bin/verificar_tienda.sh todas 2>&1); rc=$?
 [ "$rc" -eq 0 ] && ok "todas las tiendas siguen aprobadas" || mal "alguna tienda quedó con problemas"
 [ "$rc" -eq 0 ] || echo "$SAL" | sed 's/^/     /'

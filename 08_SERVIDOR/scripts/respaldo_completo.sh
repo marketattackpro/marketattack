@@ -51,7 +51,7 @@ log "scripts: $(ls -1 $W/contenido/scripts | wc -l) archivos"
 # 3b) proyecto: plantilla, clientes y documentos (para poder crear clientes
 #     nuevos después de restaurar, no solo levantar el sitio)
 if [ -d "$PROY" ]; then
-  for d in 02_DEMO 05_CLIENTES 07_COBROS 05_OPERACION 01_DOCUMENTACION; do
+  for d in 02_DEMO 05_CLIENTES 07_COBROS 05_OPERACION 01_DOCUMENTACION 10_LEGAL; do
     [ -d "$PROY/$d" ] && cp -a "$PROY/$d" "$W/contenido/" 2>/dev/null
   done
   for f in CONTEXTO.md MONITOREO.md; do

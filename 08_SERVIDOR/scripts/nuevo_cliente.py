@@ -61,7 +61,84 @@ def reemplaza_cliente(texto, datos):
                 break
         j += 1
     nuevo = "const CLIENTE = " + json.dumps(datos, ensure_ascii=False, indent=2) + ";"
-    return texto[:ini] + nuevo + texto[j + 1:]
+    texto = texto[:ini] + nuevo + texto[j + 1:]
+    # la cabecera del motor dice "TIENDA DEMO IA": en la copia del cliente no
+    texto = texto.replace("TIENDA DEMO IA", "TIENDA ONLINE")
+    texto = texto.replace("junto a este demo", "en esta tienda")
+    return texto
+
+
+def limpiar_pagina_cliente(h, datos):
+    """Quita los textos y paneles de DEMO de la página que ve el cliente.
+
+    La demo de ventas (02_DEMO) se queda igual; esto solo se aplica a la copia
+    del cliente. Los paneles internos (prospectos, resumen, contenido) hoy
+    funcionan solo en el navegador de quien mira, así que no se muestran al
+    público: el cliente recibe una tienda limpia.
+    """
+    tagline = (datos.get("marca", {}).get("tagline")
+               or datos.get("nombreComercial", "")).strip()
+    tagline = html.escape(tagline)
+
+    reemplazos = [
+        ("· Tienda Demo IA", "· Tienda online"),
+        ("🍽️", "🛍️"),
+        (" — Asistente de atención y captación</h1>", " — Tienda y pedidos</h1>"),
+        (
+            '<p class="subtitulo-seccion">Esta es una empresa ficticia de prueba. '
+            'Prueba el flujo: pregunta, pide la promo, registra tus datos y mira '
+            'el panel del "dueño".</p>',
+            f'<p class="subtitulo-seccion">{tagline} · Elige tus productos y pide '
+            'por WhatsApp.</p>',
+        ),
+        (
+            '    <nav>\n'
+            '      <a href="index.html">Inicio</a>\n'
+            '      <a href="#chat" class="activo">Chat</a>\n'
+            '      <a href="#panel">Panel</a>\n'
+            '      <a href="#dashboard">Dashboard</a>\n'
+            '      <a href="#marketing">Marketing</a>\n'
+            '    </nav>\n',
+            '',
+        ),
+        ('    <button class="tab" data-tab="panel">🏪 Panel (mini-CRM)</button>\n', ''),
+        ('    <button class="tab" data-tab="dashboard">📊 Dashboard</button>\n', ''),
+        ('    <button class="tab" data-tab="marketing">📣 Marketing IA</button>\n', ''),
+        ("Eliminar todos (demo)", "Eliminar todos"),
+        ("¿Seguro que quieres eliminar todos los prospectos de la demo?",
+         "¿Seguro que quieres eliminar todos los prospectos?"),
+        ("📊 Dashboard del negocio", "📊 Resumen del negocio"),
+        ("<h3>📈 Entendiendo el valor para el dueño</h3>",
+         "<h3>📈 Cómo leer estas cifras</h3>"),
+        (
+            "<p>En un negocio real, estas cifras llegan solas: cuántos conversaron, "
+            "cuántos dejaron sus datos y cuántos se convirtieron en venta. Eso es lo "
+            "que MarketAttack visibiliza automáticamente.</p>",
+            "<p>Estas cifras se calculan en este navegador con la actividad del chat. "
+            "Sirven de referencia y no reemplazan tu contabilidad.</p>",
+        ),
+        (
+            '<small style="color:#777;">(Demo con plantillas, la IA real llega en V4)</small>',
+            '<small style="color:#777;">(Textos base: revísalos antes de publicar)</small>',
+        ),
+        ("(Demo con plantillas, no es IA real aún)", "(Textos base para editar)"),
+        (
+            '<h3>💡 Para probar la demo</h3>\n'
+            '      <p>1. Ve a la pestaña 💬 Chat.<br>\n'
+            '         2. Escribe: <em>"¿qué venden?"</em>, <em>"¿horarios?"</em> o '
+            'directamente <em>"quiero la promo"</em>.<br>\n'
+            '         3. Responde con un nombre, luego un teléfono y luego tu interés.<br>\n'
+            '         4. Vuelve aquí: verás el prospecto registrado y podrás cambiar '
+            'su estado (Nuevo → Contactado → Vendido).</p>',
+            '<h3>💡 Cómo funciona</h3>\n'
+            '      <p>Los datos que dejen tus clientes en el chat quedan en este '
+            'navegador. Puedes marcarlos como Nuevo, Contactado o Vendido y '
+            'exportarlos a CSV.</p>',
+        ),
+    ]
+    for viejo, nuevo in reemplazos:
+        h = h.replace(viejo, nuevo)
+    return h
 
 
 def construir_autocontenida(demo_dir):
@@ -235,6 +312,8 @@ def main():
             h = h.replace("{NOMBRE}", a.nombre)
             h = h.replace("{TAGLINE}", a.tagline or a.nombre)
             h = h.replace("Market Burger", a.nombre)
+            if html_file.endswith("tienda.html"):
+                h = limpiar_pagina_cliente(h, datos)
             h = rellenar_head(h, datos, base)
             open(html_file, "w", encoding="utf-8").write(h)
 

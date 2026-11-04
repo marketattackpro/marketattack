@@ -56,7 +56,9 @@ for f in \
   contenido/scripts/watchdog_marketattack.sh \
   contenido/config/nginx.conf \
   contenido/02_DEMO/index.html \
-  contenido/05_CLIENTES
+  contenido/05_CLIENTES \
+  contenido/10_LEGAL/condiciones_servicio.html \
+  contenido/10_LEGAL/politica_privacidad.html
 do
   if [ -e "$DEST/$f" ]; then echo "  ok $f"
   else echo "  ✗ falta $f"; fallos=$((fallos+1)); fi

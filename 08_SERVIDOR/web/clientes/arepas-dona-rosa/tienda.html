@@ -33,21 +33,14 @@
 
 <header>
   <div class="contenedor-header">
-    <div class="logo">⚡ MARKETATTACK <span>· Tienda Demo IA</span></div>
-    <nav>
-      <a href="index.html">Inicio</a>
-      <a href="#chat" class="activo">Chat</a>
-      <a href="#panel">Panel</a>
-      <a href="#dashboard">Dashboard</a>
-      <a href="#marketing">Marketing</a>
-    </nav>
+    <div class="logo">⚡ MARKETATTACK <span>· Tienda online</span></div>
   </div>
 </header>
 
 <div class="contenedor">
 
-  <h1 class="titulo-seccion">🍽️ Arepas Doña Rosa — Asistente de atención y captación</h1>
-  <p class="subtitulo-seccion">Esta es una empresa ficticia de prueba. Prueba el flujo: pregunta, pide la promo, registra tus datos y mira el panel del "dueño".</p>
+  <h1 class="titulo-seccion">🛍️ Arepas Doña Rosa — Tienda y pedidos</h1>
+  <p class="subtitulo-seccion">Las arepas del barrio, hechas a mano · Elige tus productos y pide por WhatsApp.</p>
 
   <div class="ma-acciones">
     <span id="ma-estado" class="ma-estado"></span>
@@ -60,16 +53,13 @@
   <div class="tabs" id="tabs" role="tablist">
     <button class="tab activo" data-tab="chat">💬 Chat del cliente</button>
     <button class="tab" data-tab="menu">🛍️ Menú y pedidos</button>
-    <button class="tab" data-tab="panel">🏪 Panel (mini-CRM)</button>
-    <button class="tab" data-tab="dashboard">📊 Dashboard</button>
-    <button class="tab" data-tab="marketing">📣 Marketing IA</button>
   </div>
 
   <!-- PESTAÑA CHAT -->
   <div class="pestana activa" id="chat">
     <div class="ventana-chat">
       <div class="cabecera-chat">
-        <div class="avatar">🍽️</div>
+        <div class="avatar">🛍️</div>
         <div class="datos">
           <div class="nombre">Arepas Doña Rosa</div>
           <div class="estado-sitio"><span class="punto-en-linea"></span> En línea · responde al instante</div>
@@ -104,24 +94,21 @@
         <li class="vacio">Aún no hay prospectos. Pide una promo en el chat para captar el primero.</li>
       </ul>
       <button class="boton exito" onclick="exportarCSV()">⬇ Exportar CSV</button>
-      <button class="boton" onclick="limpiarProspectos()" style="margin-left:8px;background:#e63946;">Eliminar todos (demo)</button>
+      <button class="boton" onclick="limpiarProspectos()" style="margin-left:8px;background:#e63946;">Eliminar todos</button>
     </div>
     <div class="panel-card">
-      <h3>💡 Para probar la demo</h3>
-      <p>1. Ve a la pestaña 💬 Chat.<br>
-         2. Escribe: <em>"¿qué venden?"</em>, <em>"¿horarios?"</em> o directamente <em>"quiero la promo"</em>.<br>
-         3. Responde con un nombre, luego un teléfono y luego tu interés.<br>
-         4. Vuelve aquí: verás el prospecto registrado y podrás cambiar su estado (Nuevo → Contactado → Vendido).</p>
+      <h3>💡 Cómo funciona</h3>
+      <p>Los datos que dejen tus clientes en el chat quedan en este navegador. Puedes marcarlos como Nuevo, Contactado o Vendido y exportarlos a CSV.</p>
     </div>
   </div>
 
   <!-- PESTAÑA DASHBOARD -->
   <div class="pestana" id="dashboard">
-    <h2 class="titulo-seccion">📊 Dashboard del negocio</h2>
+    <h2 class="titulo-seccion">📊 Resumen del negocio</h2>
     <div class="grid-metricas" id="metricas"></div>
     <div class="panel-card">
-      <h3>📈 Entendiendo el valor para el dueño</h3>
-      <p>En un negocio real, estas cifras llegan solas: cuántos conversaron, cuántos dejaron sus datos y cuántos se convirtieron en venta. Eso es lo que MarketAttack visibiliza automáticamente.</p>
+      <h3>📈 Cómo leer estas cifras</h3>
+      <p>Estas cifras se calculan en este navegador con la actividad del chat. Sirven de referencia y no reemplazan tu contabilidad.</p>
     </div>
   </div>
 
@@ -129,7 +116,7 @@
   <div class="pestana" id="marketing">
     <div class="panel-card">
       <h3>📣 Genera contenido desde una idea</h3>
-      <p>Escribe una promoción o noticia y MarketAttack genera textos para cada canal. Ejemplo: <em>"Tenemos 2x1 este fin de semana"</em>. <small style="color:#777;">(Demo con plantillas, la IA real llega en V4)</small></p>
+      <p>Escribe una promoción o noticia y MarketAttack genera textos para cada canal. Ejemplo: <em>"Tenemos 2x1 este fin de semana"</em>. <small style="color:#777;">(Textos base: revísalos antes de publicar)</small></p>
       <div class="gen-area">
         <textarea id="idea-input" rows="3" placeholder="Describe tu promoción o novedad..."></textarea>
         <button class="boton" onclick="generarMarketing()">✨ Generar contenido</button>
@@ -170,7 +157,7 @@ function agregarMensaje(tipo, texto, conChips, conEscribiendo) {
   if (tipo === "ia" || tipo === "sistema") {
     const avatar = document.createElement("div");
     avatar.className = "avatar-msg";
-    avatar.textContent = "🍽️";
+    avatar.textContent = "🛍️";
     div.appendChild(avatar);
   }
 
@@ -222,7 +209,7 @@ function mostrarEscribiendo() {
   div.className = "msg ia escribiendo-msg";
   const avatar = document.createElement("div");
   avatar.className = "avatar-msg";
-  avatar.textContent = "🍽️";
+  avatar.textContent = "🛍️";
   div.appendChild(avatar);
   const burbuja = document.createElement("div");
   burbuja.className = "burbuja escribiendo";
@@ -402,7 +389,7 @@ function guardarProspectoLocal() {
   const nombre = prospectoParcial.nombre;
   etapaCaptura = null;
   prospectoParcial = {};
-  respuestaIA("✅ ¡Listo " + nombre + "! Tu información quedó registrada y el restaurante ya recibió tu oportunidad. En breve te contactamos por WhatsApp. ¡Gracias por preferir " + MarketAttack.CLIENTE.nombreComercial + "! 🍽️");
+  respuestaIA("✅ ¡Listo " + nombre + "! Tu información quedó registrada y el restaurante ya recibió tu oportunidad. En breve te contactamos por WhatsApp. ¡Gracias por preferir " + MarketAttack.CLIENTE.nombreComercial + "! 🛍️");
   actualizarPanel();
   actualizarDashboard();
 }
@@ -489,7 +476,7 @@ function exportarCSV() {
 }
 
 function limpiarProspectos() {
-  if (!confirm("¿Seguro que quieres eliminar todos los prospectos de la demo?")) return;
+  if (!confirm("¿Seguro que quieres eliminar todos los prospectos?")) return;
   MarketAttack.limpiarProspectos();
   actualizarPanel();
   actualizarDashboard();
@@ -528,7 +515,7 @@ function generarMarketing() {
     cont.appendChild(div);
   });
   cont.insertAdjacentHTML("afterbegin",
-    '<div class="gen-bloque" style="background:#eafaf1;border:1px solid #a9dfbf;"><span class="verde">✓ Generado por MarketAttack.</span> Recuerden: IA genera → humano revisa → humano aprueba → se publica. <small style="color:#777;">(Demo con plantillas, no es IA real aún)</small></div>');
+    '<div class="gen-bloque" style="background:#eafaf1;border:1px solid #a9dfbf;"><span class="verde">✓ Generado por MarketAttack.</span> Recuerden: IA genera → humano revisa → humano aprueba → se publica. <small style="color:#777;">(Textos base para editar)</small></div>');
 }
 
 function copiarTexto(btn) {
@@ -595,7 +582,7 @@ function renderMenu() {
     el.href = "https://wa.me/" + n;
   })();
   const sugerencias = ["¿Qué venden?", "¿Horarios?", "¿Dónde están?", "Quiero la promo"];
-  agregarMensaje("ia", "¡Hola! Soy el asistente de **🍽️ " + MarketAttack.CLIENTE.nombreComercial + "** 😊 Puedo decirte el menú, precios, horarios, ubicación o contarte las promociones. ¿Qué deseas saber?", sugerencias);
+  agregarMensaje("ia", "¡Hola! Soy el asistente de **🛍️ " + MarketAttack.CLIENTE.nombreComercial + "** 😊 Puedo decirte el menú, precios, horarios, ubicación o contarte las promociones. ¿Qué deseas saber?", sugerencias);
   document.getElementById("entrada").addEventListener("keydown", e => { if (e.key === "Enter") enviarMensaje(); });
 })();
 </script>

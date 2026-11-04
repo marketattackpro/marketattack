@@ -1,5 +1,5 @@
 /* =========================================================================
-   MARKETATTACK — TIENDA DEMO IA
+   MARKETATTACK — TIENDA ONLINE
    Lógica compartida (base reutilizable).
    Para un CLIENTE NUEVO solo se cambia el objeto CLIENTE abajo.
    ========================================================================= */
@@ -70,7 +70,7 @@ const CLIENTE = {
   ]
 };;
 
-/* Simula una IA real: junto a este demo se conectará un modelo (V4+).
+/* Simula una IA real: en esta tienda se conectará un modelo (V4+).
    Aquí usamos reglas y plantillas para mostrar el flujo completo y barato. */
 const KEY = "prospectos_" + CLIENTE.nombreInterno;
 

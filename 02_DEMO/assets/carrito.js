@@ -10,6 +10,13 @@
   var CARRITO = [];
   var medioSel = "";
 
+  var _MC = window.MarketAttack || {};
+  var _CL = _MC.CLIENTE || {};
+  var _waNum = String(_CL.whatsapp || "").replace(/[^\d]/g, "");
+  if (_waNum.length === 10 && _waNum.startsWith("3")) _waNum = "57" + _waNum;
+  var _waLink = "https://wa.me/" + _waNum + "?text=" + encodeURIComponent("Hola, quiero pedir");
+  var _waTexto = "💬 WhatsApp: " + (_waNum.length === 12 ? _waNum.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3") : _waNum);
+
   function total() {
     return CARRITO.reduce(function (ac, i) { return ac + (parsePrecio(i.precio) * (i.cant || 1)); }, 0);
   }
@@ -71,7 +78,7 @@
     '  <div id="carrito-ok"></div>' +
     '  <div id="carrito-redes">' +
     '    <h4>📲 Síguenos y pide por redes</h4>' +
-    '    <button class="red-btna" data-red="https://wa.me/3209226563?text=Hola,%20quiero%20pedir">💬 WhatsApp: 320 922 6563</button>' +
+    '    <button class="red-btna" data-red="' + _waLink + '">' + _waTexto + '</button>' +
     '    <button class="red-btna" data-red="https://instagram.com">📸 Instagram</button>' +
     '    <button class="red-btna" data-red="https://facebook.com">📘 Facebook</button>' +
     '    <button class="red-btna" data-red="https://tiktok.com">🎵 TikTok</button>' +
@@ -135,7 +142,7 @@
   mediosEl.addEventListener("click", function (e) {
     var m = e.target.closest(".medio");
     if (!m) return;
-    mediSel = m.getAttribute("data-medio");
+    medioSel = m.getAttribute("data-medio");
     var all = mediosEl.querySelectorAll(".medio");
     for (var i = 0; i < all.length; i++) all[i].classList.remove("seleccionado");
     m.classList.add("seleccionado");
@@ -143,8 +150,24 @@
     okEl.style.display = "none";
   });
 
+  function urlPedido() {
+    var cliente = (window.MarketAttack && window.MarketAttack.CLIENTE) || {};
+    var wa = cliente.whatsapp || "";
+    var waLimp = wa.replace(/[^\d]/g, "");
+    if (waLimp.length === 10 && waLimp.startsWith("3")) waLimp = "57" + waLimp;
+    var body = "*PEDIDO " + (cliente.nombreComercial || "MARKETATTACK").toUpperCase() + "*\n\n";
+    body += CARRITO.map(function (i) { return "• " + i.cant + "x " + i.nombre + " — " + moneda(parsePrecio(i.precio) * (i.cant||1)); }).join("\n");
+    body += "\n\n*Total:* " + moneda(total());
+    body += "\n*Pago:* " + medioSel;
+    return "https://wa.me/" + waLimp + "?text=" + encodeURIComponent(body);
+  }
+
+  function enviarWhatsApp(url) {
+    window.open(url, "_blank");
+  }
+
   confirmarBtn.addEventListener("click", function () {
-    if (!mediSel) {
+    if (!medioSel) {
       okEl.textContent = "❗ Primero elige un método de pago arriba.";
       okEl.style.display = "block";
       okEl.style.borderColor = "#e63946";
@@ -155,7 +178,7 @@
     okEl.style.borderColor = "#27ae60";
     okEl.style.background = "#eafaf1";
     okEl.style.color = "#145a2b";
-    okEl.textContent = "✅ ¡Pedido confirmado por " + mediSel + " por " + moneda(total()) + "! Lo registramos y te contactamos. 🍔";
+    okEl.textContent = "✅ ¡Pedido confirmado por " + medioSel + " por " + moneda(total()) + "! Redirigiendo a WhatsApp...";
     okEl.style.display = "block";
     try {
       var MC = window.MarketAttack;
@@ -165,13 +188,15 @@
           id: Date.now() + "-" + Math.floor(Math.random() * 999),
           nombre: "Cliente (pedido web)",
           telefono: "—",
-          interes: "Pedido " + moneda(total()) + " · " + mediSel + " · " + CARRITO.map(function (i) { return i.cant + "x " + i.nombre; }).join(", "),
+          interes: "Pedido " + moneda(total()) + " · " + medioSel + " · " + CARRITO.map(function (i) { return i.cant + "x " + i.nombre; }).join(", "),
           estado: "nuevo",
           fecha: new Date().toLocaleString("es-CO")
         });
         MC.guardarListaProspectos(lista);
       }
     } catch (e) {}
+    var url = urlPedido();          // se arma ANTES de vaciar el carrito
+    setTimeout(function () { enviarWhatsApp(url); }, 500);
     CARRITO = [];
     render();
   });
@@ -192,20 +217,21 @@
   };
 
   function enlazarMenu() {
-    var items = document.querySelectorAll(".producto, .card, .menu-item, [class*=\"produc\"], [class*=\"menu\"] [class*=\"precio\"], [class*=\"precio\"]");
+    var items = document.querySelectorAll(".producto, .menu-item, .tarjeta-producto, [data-producto], [class*=\"produc\"], .card");
     if (!items.length) return;
     for (var i = 0; i < items.length; i++) {
       var el = items[i];
       if (el.getAttribute("data-carro") === "1") continue;
-      var cn = (el.className || "") + " " + (el.textContent || "");
-      var nm = (cn.match(/(Hamburguesa[^\n$]*|Perro[^\n$]*|Papas[^\n$]*|Combo[^\n$]*|Malteada[^\n$]*)/i) || [])[0];
-      var pc = (cn.match(/\$\s?[0-9.,]+/) || [])[0];
-      if (!nm || !pc) continue;
+      var texto = (el.textContent || "").replace(/\s+/g, " ").trim();
+      var pc = (texto.match(/\$\s?[0-9][0-9.,]*/) || [])[0];
+      if (!pc) continue;
+      var nombre = (el.getAttribute("data-nombre") || el.querySelector("h3,h4,.nombre,.titulo") && el.querySelector("h3,h4,.nombre,.titulo").textContent || texto.split("$")[0]).trim();
+      if (!nombre) continue;
       el.setAttribute("data-carro", "1");
       var btn = document.createElement("button");
       btn.textContent = "🛒 Agregar";
       btn.style.cssText = "margin-left:8px;background:#e63946;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer";
-      btn.onclick = function (nombre, precio) { return function (ev) { ev.preventDefault(); ev.stopPropagation(); window.MarketAttackCarrito.agregar(nombre, precio); }; }(nm.trim(), pc);
+      btn.onclick = function (nombre_, precio_) { return function (ev) { ev.preventDefault(); ev.stopPropagation(); window.MarketAttackCarrito.agregar(nombre_, precio_); }; }(nombre, pc);
       el.appendChild(btn);
     }
   }

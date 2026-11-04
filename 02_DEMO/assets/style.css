@@ -671,3 +671,10 @@ nav a.activo { background: var(--primario); box-shadow: 0 2px 8px rgba(230, 57, 
   .lista-prospectos li { flex-direction: column; align-items: flex-start; }
   .lista-prospectos .info { width: 100%; }
 }
+
+/* ===== Estado en vivo, compartir y mapa (MarketAttack) ===== */
+.ma-acciones{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 6px}
+.ma-estado{font-size:.92rem;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid #ddd;background:#fff;color:#555}
+.ma-estado.abierto{color:#0a7d33;border-color:#bfe6cd;background:#e8f7ee}
+.ma-estado.cerrado{color:#a4161a;border-color:#f2c6c6;background:#fdeaea}
+.ma-mapa:not(:empty){margin:14px 0}

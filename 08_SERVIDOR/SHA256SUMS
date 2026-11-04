@@ -51,7 +51,7 @@ a1156cc8658f67ce8cd5e311399e8795a79a9e4787d6a328268d02e74088151b  ./contenido/02
 76add0987bfc9ac5fe408c82fd9ad7f95ff427ba4061c7a4618c00708e7d743b  ./contenido/02_DEMO/assets/tienda_autocontenida.html
 4476b1705d64a768fe9c21f2c1f2058946556f28644a815cb625c6748f443bd7  ./contenido/02_DEMO/assets/menu.pdf
 ac5ac7d3a7a861cf3f871e3c2973acce04d09eceee4bc12e848c264567848eba  ./contenido/02_DEMO/assets/icono.png
-302211c3d0ba7522aa6ca7fcd41ee031b40c8b1a26e6cc0f298400b1ab390fc4  ./contenido/CONTEXTO.md
+b01ba4c4d1292daf228c494a97da7bd23cc3a52bc74239234e345602d8493442  ./contenido/CONTEXTO.md
 0ca1ca25abf49d01f3954d716444ef73b5f09f9fe833170242fb1c06b431a582  ./contenido/web/recuperar.html
 623c09a9aab7c7baaa750607fcc9fac33c01779de06d1a4f3f7933b144eca0c3  ./contenido/web/index.html
 a268b5e334d9262b1d4988e0efcd7828d46388320794402b73e35e86d7cda03d  ./contenido/web/encender_web.sh
@@ -131,4 +131,4 @@ a184fab682eb7d7e92f34b85e16fb420a866a785bfffbc97d56148cb070b571d  ./contenido/sc
 74e89e05e6006870fdae4ee979d37ea765a01a861133c52b07db4fb681fa038e  ./contenido/scripts/publicar.sh
 3d7ab63416deda6db0e37a622dd95affa4090857c6059741cc74390f2a95b252  ./contenido/scripts/verificar_respaldos.sh
 2d8fb4ab2a6b169e898e575797ddc7d84b1ed68ff99c6a5b5dcb789c45e09368  ./contenido/scripts/verificar_kit.sh
-f875df7792bb460fe5df83f9636231327f8afed2527454d45a09173e66b614df  ./ESTADO.txt
+b36103e052310c9b05dd2064a9a92a5bb51987fc43f22dea78ff9d9529fc31eb  ./ESTADO.txt

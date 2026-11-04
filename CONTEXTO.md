@@ -747,6 +747,8 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
 - `05_OPERACION/POLITICA_SOPORTE.md` — canales, tiempos, límites, pausa.
 - `05_OPERACION/MENSAJES_CLIENTE.md` — 15 mensajes listos para WhatsApp.
 - `05_OPERACION/registro_soporte.csv` — bitácora de reclamos.
+- `05_OPERACION/SOLICITUD_INICIO_CLIENTE.md` — mensaje y checklist para pedir
+  los datos del cliente una sola vez, sin olvidar nada.
 - `10_LEGAL/condiciones_servicio.html` y `politica_privacidad.html` — listos
   para PDF. **Faltan 3 datos del prestador** (nombre, cédula/NIT, ciudad) que
   están marcados en amarillo; no se envían al cliente sin completarlos.

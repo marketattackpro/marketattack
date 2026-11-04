@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tienda online · MarketAttack</title>
+<style>
+:root {
+  --primario: #e63946;
+  --primario-dark: #ca2f3c;
+  --oscuro: #1d3557;
+  --fondo: #f4f7f6;
+  --fondo-suave: #f8f9fa;
+  --exito: #2a9d8f;
+  --exito-dark: #21867a;
+  --whatsapp: #25d366;
+  --warning: #e9c46a;
+  --gris: #64748b;
+  --borde: #e2e8f0;
+  --radio: 16px;
+  --radio-sm: 10px;
+  --sombra: 0 2px 12px rgba(29, 53, 87, 0.08);
+  --sombra-md: 0 6px 24px rgba(29, 53, 87, 0.12);
+  --chat-fondo: #ecece4;
+  --trans: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+  background: var(--fondo);
+  color: #1e293b;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+a { color: inherit; }
+
+/* ============ HEADER / NAV ============ */
+header {
+  background: linear-gradient(135deg, #16283f 0%, var(--oscuro) 45%, var(--primario) 130%);
+  color: #fff;
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.22);
+  backdrop-filter: blur(6px);
+}
+
+.contenedor-header {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+}
+
+.logo span { color: #ffd166; }
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  margin-left: 6px;
+  font-size: 0.88rem;
+  padding: 7px 12px;
+  border-radius: 30px;
+  transition: background var(--trans), transform var(--trans);
+}
+
+nav a:hover { background: rgba(255, 255, 255, 0.16); }
+nav a.activo { background: var(--primario); box-shadow: 0 2px 8px rgba(230, 57, 70, 0.4); }
+
+/* ============ ESTRUCTURA ============ */
+.contenedor {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 22px 16px 70px;
+}
+
+.contenedor-ancho { max-width: 980px; }
+
+.titulo-seccion { color: var(--oscuro); font-size: 1.35rem; margin-bottom: 8px; }
+.subtitulo-seccion { color: var(--gris); margin-bottom: 20px; }
+
+/* ============ TABS ============ */
+.tabs {
+  display: flex;
+  gap: 8px;
+  padding: 10px 0 16px;
+  flex-wrap: wrap;
+}
+
+.tab, .tabs > a.tab {
+  border: none;
+  padding: 10px 18px;
+  border-radius: 30px;
+  cursor: pointer;
+  background: #eef2f7;
+  color: var(--oscuro);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
+}
+
+.tab:hover, .tabs > a.tab:hover { background: #e2e8f0; transform: translateY(-1px); }
+.tab.activo, .tabs > a.tab.activo { background: var(--primario); color: #fff; box-shadow: 0 4px 14px rgba(230, 57, 70, 0.35); }
+
+.pestana { display: none; }
+.pestana.activa { display: block; animation: aparecer 0.28s ease; }
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ CHAT (ventana tipo app) ============ */
+.ventana-chat {
+  background: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.cabecera-chat {
+  background: linear-gradient(135deg, var(--oscuro), #2a4d73 70%, #35507a);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cabecera-chat .avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primario), var(--warning));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+.cabecera-chat .datos { flex: 1; min-width: 0; }
+.cabecera-chat .nombre { font-weight: 800; font-size: 0.98rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cabecera-chat .estado-sitio { font-size: 0.78rem; opacity: 0.9; display: flex; align-items: center; gap: 6px; }
+
+.punto-en-linea {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  animation: pulso 1.8s infinite;
+}
+
+@keyframes pulso {
+  0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6); }
+  70% { box-shadow: 0 0 0 7px rgba(74, 222, 128, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0); }
+}
+
+.chat {
+  height: 52vh;
+  min-height: 300px;
+  max-height: 460px;
+  overflow-y: auto;
+  background: var(--chat-fondo);
+  background-image: radial-gradient(circle, rgba(29, 53, 87, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  padding: 16px 12px;
+}
+
+/* Scroll fino */
+.chat::-webkit-scrollbar { width: 8px; }
+.chat::-webkit-scrollbar-track { background: transparent; }
+.chat::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 20px; }
+.chat::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.msg { margin-bottom: 12px; display: flex; align-items: flex-end; gap: 8px; animation: entrada-msg 0.25s ease; }
+
+@keyframes entrada-msg {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.msg .avatar-msg {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.msg .burbuja {
+  max-width: 76%;
+  padding: 10px 14px;
+  border-radius: var(--radio);
+  font-size: 0.93rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+  position: relative;
+}
+
+.msg .hora {
+  display: block;
+  font-size: 0.66rem;
+  color: #94a3b8;
+  margin-top: 4px;
+  text-align: right;
+  letter-spacing: 0.3px;
+}
+
+.msg.cliente { justify-content: flex-end; }
+.msg.cliente .avatar-msg { order: 2; background: #fecaca; }
+.msg.cliente .burbuja {
+  background: linear-gradient(135deg, var(--primario), var(--primario-dark));
+  color: #fff;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0 2px 8px rgba(230, 57, 70, 0.25);
+}
+
+.msg.cliente .hora { color: rgba(255, 255, 255, 0.75); }
+
+.msg.ia { justify-content: flex-start; }
+.msg.ia .avatar-msg { background: #dbeafe; }
+.msg.ia .burbuja {
+  background: #fff;
+  color: #1e293b;
+  border-bottom-left-radius: 5px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.msg.sistema .burbuja {
+  background: #fff7e6;
+  color: #7c5a00;
+  font-size: 0.85rem;
+  border: 1px solid #fde68a;
+}
+
+.msg.ia .burbuja b, .msg.cliente .burbuja b { color: var(--primario); }
+.msg.cliente .burbuja b { color: #ffe9a8; }
+
+/* Indicador "escribiendo…" */
+.escribiendo { display: inline-flex; align-items: center; gap: 4px; padding: 14px 16px; }
+.escribiendo .punto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #94a3b8;
+  animation: latido 1.2s infinite ease-in-out;
+}
+.escribiendo .punto:nth-child(2) { animation-delay: 0.15s; }
+.escribiendo .punto:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes latido {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+
+.acciones-rapidas { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+.chip {
+  border: 1.5px solid var(--primario);
+  background: #fff;
+  color: var(--primario);
+  padding: 7px 14px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background var(--trans), color var(--trans), transform var(--trans);
+}
+
+.chip:hover { background: var(--primario); color: #fff; transform: translateY(-1px); }
+
+.campo-chat { display: flex; gap: 8px; padding: 12px; background: #f1f5f9; }
+
+.campo-chat input,
+.campo-chat textarea {
+  flex: 1;
+  padding: 12px 16px;
+  border: 2px solid transparent;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  background: #fff;
+  transition: border-color var(--trans), box-shadow var(--trans);
+}
+
+.campo-chat input:focus,
+.campo-chat textarea:focus {
+  border-color: var(--primario);
+  box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.15);
+}
+
+.boton {
+  border: none;
+  padding: 11px 22px;
+  border-radius: 30px;
+  background: var(--primario);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--trans), transform var(--trans), box-shadow var(--trans);
+  font-size: 0.92rem;
+}
+
+.boton:hover { background: var(--primario-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); }
+.boton:active { transform: translateY(0); }
+.boton.secundario { background: var(--oscuro); }
+.boton.secundario:hover { box-shadow: 0 4px 12px rgba(29, 53, 87, 0.3); }
+.boton.exito { background: var(--exito); }
+.boton.exito:hover { background: var(--exito-dark); box-shadow: 0 4px 12px rgba(42, 157, 143, 0.3); }
+.boton.accion { min-width: 44px; padding: 11px 14px; }
+.boton.bloque { width: 100%; }
+
+/* ============ CARDS ============ */
+.panel-card {
+  background: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: box-shadow var(--trans);
+}
+
+.panel-card h3 { color: var(--oscuro); margin-bottom: 10px; }
+.panel-card p { color: #64748b; font-size: 0.94rem; }
+
+/* ============ LISTA PROSPECTOS (mini-CRM) ============ */
+.filtros { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+
+.lista-prospectos { list-style: none; }
+.lista-prospectos li {
+  background: var(--fondo-suave);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  transition: border-color var(--trans), transform var(--trans);
+}
+
+.lista-prospectos li:hover { border-color: var(--primario); transform: translateX(2px); }
+
+.lista-prospectos .info { font-size: 0.9rem; }
+
+.estado {
+  font-size: 0.72rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  color: #fff;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: filter var(--trans);
+}
+.estado:hover { filter: brightness(0.94); }
+.estado.nuevo { background: var(--warning); color: #6b3d00; }
+.estado.contactado { background: #457b9d; }
+.estado.vendido { background: var(--exito); }
+
+.vacio { color: var(--gris); font-style: italic; text-align: center; padding: 22px; }
+
+/* ============ MARKETING ============ */
+.gen-area { display: flex; gap: 10px; flex-direction: column; }
+
+.gen-area textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--borde);
+  border-radius: var(--radio-sm);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  transition: border-color var(--trans), box-shadow var(--trans);
+}
+
+.gen-area textarea:focus { border-color: var(--primario); box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.12); }
+
+.gen-bloque {
+  background: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+
+.gen-bloque h4 { color: var(--oscuro); margin-bottom: 8px; }
+
+.gen-bloque textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: var(--fondo-suave);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  resize: vertical;
+  color: #334155;
+}
+
+.verde { color: var(--exito); font-weight: 700; }
+
+/* ============ LANDING ============ */
+.hero {
+  text-align: center;
+  padding: 44px 0 24px;
+}
+
+.hero h1 {
+  font-size: 2.15rem;
+  color: var(--oscuro);
+  margin-bottom: 12px;
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+}
+
+.hero p { color: var(--gris); font-size: 1.06rem; max-width: 640px; margin: 0 auto 24px; }
+
+.badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 28px; }
+.badge {
+  background: #fff;
+  border: 1px solid var(--borde);
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--oscuro);
+  transition: transform var(--trans), box-shadow var(--trans);
+}
+
+.badge:hover { transform: translateY(-2px); box-shadow: var(--sombra); }
+
+.grid-demo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.card-demo {
+  background: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 24px 18px;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--trans), box-shadow var(--trans);
+}
+
+.card-demo:hover { transform: translateY(-4px); box-shadow: var(--sombra-md); }
+
+.card-demo .icono { font-size: 2rem; margin-bottom: 10px; display: block; }
+.card-demo h3 { color: var(--oscuro); margin-bottom: 6px; }
+.card-demo p { color: var(--gris); font-size: 0.85rem; }
+
+/* ============ PERSONALIZADO: SEO / AVATAR EXTRA ============ */
+.avatar-perfil {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ============ WA BUTTON ============ */
+.wa-flotante {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: var(--whatsapp);
+  color: #fff;
+  border-radius: 50px;
+  padding: 13px 20px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.4);
+  z-index: 60;
+  font-size: 0.9rem;
+  transition: transform var(--trans), background var(--trans), box-shadow var(--trans);
+}
+
+.wa-flotante:hover { background: #1eb958; transform: translateY(-2px) scale(1.03); box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5); }
+
+/* ============ DASHBOARD ============ */
+.grid-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metrica {
+  background: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 18px 14px;
+  text-align: center;
+  border-top: 4px solid var(--primario);
+  transition: transform var(--trans), box-shadow var(--trans);
+}
+
+.metrica:hover { transform: translateY(-3px); box-shadow: var(--sombra-md); }
+.metrica:nth-child(2) { border-top-color: var(--warning); }
+.metrica:nth-child(3) { border-top-color: #457b9d; }
+.metrica:nth-child(4) { border-top-color: var(--exito); }
+.metrica:nth-child(5) { border-top-color: #7c3aed; }
+
+.metrica .numero { font-size: 1.9rem; font-weight: 800; color: var(--oscuro); }
+.metrica .etiqueta { color: var(--gris); font-size: 0.8rem; }
+
+/* ============ AUTODEMO ============ */
+.autodemo-paso {
+  background: #fff;
+  border-radius: var(--radio);
+  box-shadow: var(--sombra);
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  opacity: 0.35;
+  transition: opacity 0.4s;
+}
+
+.autodemo-paso.activo { opacity: 1; border-left: 4px solid var(--primario); }
+
+.autodemo-paso .num {
+  background: var(--oscuro);
+  color: #fff;
+  min-width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.autodemo-paso h4 { color: var(--oscuro); margin-bottom: 4px; }
+.autodemo-paso p { color: #555; font-size: 0.88rem; }
+
+/* ============ MOCKUP DE CELULAR (landing) ============ */
+.disp-mockup {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 0;
+}
+
+.telefono {
+  width: 280px;
+  background: #0f172a;
+  border-radius: 36px;
+  padding: 12px;
+  box-shadow: 0 22px 50px rgba(15, 23, 42, 0.35);
+  position: relative;
+}
+
+.telefono .notch {
+  width: 110px;
+  height: 22px;
+  background: #0f172a;
+  border-radius: 0 0 14px 14px;
+  margin: -12px auto 10px;
+}
+
+.telefono .pantalla {
+  background: var(--chat-fondo);
+  background-image: radial-gradient(circle, rgba(29, 53, 87, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+  border-radius: 26px;
+  padding: 10px;
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.pantalla .mini-cab {
+  background: linear-gradient(135deg, var(--oscuro), #2a4d73);
+  color: #fff;
+  border-radius: 20px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pantalla .mini-cab .av { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--primario), var(--warning)); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+.burbuja-min {
+  max-width: 78%;
+  padding: 8px 11px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+}
+
+.burbuja-min.cliente { align-self: flex-end; background: var(--primario); color: #fff; border-bottom-left-radius: 12px; border-bottom-right-radius: 4px; }
+
+.min-chips { align-self: center; display: flex; gap: 5px; }
+.min-chips span {
+  background: #fff;
+  border: 1px solid var(--primario);
+  color: var(--primario);
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 30px;
+}
+
+.min-campo { margin-top: auto; background: #fff; border-radius: 20px; padding: 7px 12px; font-size: 0.7rem; color: #94a3b8; display: flex; justify-content: space-between; }
+.min-campo b { background: var(--primario); color: #fff; border-radius: 30px; padding: 1px 8px; font-size: 0.62rem; }
+
+/* ============ FOOTER MÍNIMO ============ */
+.footer-demo {
+  text-align: center;
+  color: var(--gris);
+  font-size: 0.78rem;
+  padding: 6px 0 0;
+}
+
+@media (max-width: 560px) {
+  .logo { font-size: 1.02rem; }
+  nav a { margin-left: 4px; font-size: 0.76rem; padding: 6px 9px; }
+  .hero h1 { font-size: 1.55rem; }
+  .telefono { width: 240px; }
+  .burbuja-min { font-size: 0.68rem; }
+  .cabecera-chat .nombre { font-size: 0.9rem; }
+  .msg .burbuja { max-width: 88%; font-size: 0.9rem; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 10px; -webkit-overflow-scrolling: touch; }
+  .tabs .tab, .tabs > a.tab { flex-shrink: 0; }
+  .chat { height: 46vh; }
+  .wa-flotante { bottom: 14px; right: 14px; padding: 11px 16px; }
+}
+
+@media (max-width: 400px) {
+  .contenedor { padding: 16px 12px 70px; }
+  .campo-chat { flex-direction: row; }
+  .lista-prospectos li { flex-direction: column; align-items: flex-start; }
+  .lista-prospectos .info { width: 100%; }
+}
+
+/* ===== Estado en vivo, compartir y mapa (MarketAttack) ===== */
+.ma-acciones{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0 6px}
+.ma-estado{font-size:.92rem;font-weight:700;padding:6px 14px;border-radius:999px;border:1px solid #ddd;background:#fff;color:#555}
+.ma-estado.abierto{color:#0a7d33;border-color:#bfe6cd;background:#e8f7ee}
+.ma-estado.cerrado{color:#a4161a;border-color:#f2c6c6;background:#fdeaea}
+.ma-mapa:not(:empty){margin:14px 0}
+
+</style>
+<!--MA_HEAD:BEGIN-->
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAFWElEQVR42u2c728URRjHv7O3e1d6ERS1hGIqiYL4KwUbIdTQ2GoLLVdajIkv/Gt8VcML5D9B6PXXWSot0hOJCIE0GkRDU8GiLT/O3Hm7e7u+IGpMtc7e7fZuZ76f15e93Xk+88w8M7MrEAF3Dvb5IJHQms+JMK8nGHC9hRAMvN4iCAZebxEEA6+3CAaDryay8TIYfL0lMBh8vSUwGHy9JTAYfL0lMBh8vSUwGHy9JTDYJHpjsPfrnQWYAZgB2Pt1zgLMAJoj2Ps5BBAKQCgA0VMAjv/MAIQCEApAKAChAIQCEApAKAChAIQCEApAKAChAERRzHrfQPqTj2G2vxbKtYojJ+F8NhP9PZ8cgbn39XDu+aMROLMXmQHCIHU8E/l/JHa2hRZ8DgFhB2fPbiRe2hXpfySPD3IO0MhEGSCRTsPq7aYADS1A9yGILZujuXZ/L0RTEwVoaCwLyYHDEXR/geTQUZaBscgCx/oBI9xHM/d3wNixnQLE4qG2tcDq3B+7CoMChJkFhsILmLFjO8w3OyhAnDA79sJoey4cmYYzgBAUIG6khmvPAqKpCckj7yrbRkoLYPW9A9G8qbZr9HZDpNMUII6I5k2wentqS/+KrfxpJcDjYaD62t3c147EzjYKEOsHfL4N5r72Knt/Bsq3T2zv3HEiDaTR8iyszgOR3A8FCCP+5y/IT+Q6D8BoeSbgOsKA9Gqi9+sK3OsLFGBDBchfhnd3WfIpDSQHBwJEPxloP8E+OwFUKhRgQ/E92GfH5WN69DBgWXK/7emS31F0XdjZSc4B6oE9noNftuVKwie3wHr7kJwAARaQnPNfwH/wgALUJQkUCnBmZuVLQonJYOKVPUjsflH6muVPs6wC6poFTo9K/1bmyFjqPfmFn8p3N1FZ+JYC1JPK9z+gckN+Br5eehdbn4LV9Za8fDHv/UoIEDQNr3dkLDnYD5hyJ+X9h49gz8xRgIYoCefm4a+s1lbimSZSmSMBJqBTsV38UU6AoKVY8lj/mv19q6sT4umtchfwPNhnxpVoOmX2AsrZScB15R56W8uaZd5UgF0/Z/4SvHu/UICGKglXVuHMzVc1GUzsegGJV18OUHlkVWk2tXYDg0wGzTfa/zoyFmTP37u9CPebaxSgIUvCGwuo3Lwl92MhkBrOQGx+AlZ3VwDJxlRqMvXOAwSpza2+HqTeH4JIJeWGmWIRTu4cBWhoAc7Nwi8U5JJAczNSH34gP/mbnIZf+p0CNLYBNuzxnPzvZY97+75y6V9NAYDHNbof7lfw3a+vwlv6iQLEAe/nZTj5r8KtMAJsOlGARsgCIdbq3t1luF9epgBxwr1yFd7iUkhDyljoQwoFiBrfR/lM7ZM2v2zDnsgp20xKvxfgTE3DL5Zqu8b05/ALv1GAWCaBYqnmhRsVDn1oKwBQ25k99/oCKrd+pACxLgkXl+BeuVZl7x9VvXn0+FSsXUUN762swrmQpwBKTAbnL8FbvhdMmtEJ6QMmFCAGJWGQt4ji/rYPBfi3Hj02BdhybxE5cxfhr96nAEolgUcF6WPc5dNZXZql/p+L30hKJ06hdOIUiIYZgFAAQgEIBSAUgFAAQgEIBSAUgAIQrRF3Dvb5bAZmAEIBCAUgFIBQAEIBCAUgFIBQAEIBCAUgFIBQAEIBiHICtOZzgs3ADEAoAKEARE8BOA/Qk9Z8TjADMAP8bQObQ6/ezzkA+acAzAJ69X5mALJWAGYBfXr/f2YASqBH8NcdAiiB+sH/3zkAJVA7+FKTQEqgbvClqwBKoGbwA5WBlEC94ANAVUHlNwXiH/iaBKAI8Q98KAJQhPgG/k/+ABSUvNqXZo7pAAAAAElFTkSuQmCC">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#e63946">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MarketAttack">
+<meta property="og:title" content="Market Burger">
+<meta property="og:description" content="Las mejores hamburguesas de Ciudad Verde">
+<meta property="og:image" content="assets/portada.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Market Burger">
+<meta name="twitter:description" content="Las mejores hamburguesas de Ciudad Verde">
+<meta name="twitter:image" content="assets/portada.png">
+<!--MA_HEAD:END-->
+<style>
+.grid-menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:14px}
+.tarjeta-producto{background:#fff;border:1px solid #eee;border-radius:14px;padding:14px;box-shadow:0 4px 14px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:6px}
+.tarjeta-producto .nombre{font-weight:700;color:#1d3557;font-size:1.02rem}
+.tarjeta-producto .desc{color:#666;font-size:.85rem;flex:1}
+.tarjeta-producto .precio{color:#e63946;font-weight:800;font-size:1.1rem}
+.tarjeta-producto .acciones{margin-top:6px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="contenedor-header">
+    <div class="logo">⚡ MARKETATTACK <span>· Tienda Demo IA</span></div>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="#chat" class="activo">Chat</a>
+      <a href="#panel">Panel</a>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#marketing">Marketing</a>
+    </nav>
+  </div>
+</header>
+
+<div class="contenedor">
+
+  <h1 class="titulo-seccion">🍽️ Market Burger — Asistente de atención y captación</h1>
+  <p class="subtitulo-seccion">Esta es una empresa ficticia de prueba. Prueba el flujo: pregunta, pide la promo, registra tus datos y mira el panel del "dueño".</p>
+
+  <div class="ma-acciones">
+    <span id="ma-estado" class="ma-estado"></span>
+    <button id="ma-compartir" class="chip" type="button">🔗 Compartir</button>
+    <a class="chip" href="assets/menu.png" target="_blank" rel="noopener">📄 Menú imprimible</a>
+  </div>
+  <div id="ma-mapa" class="ma-mapa"></div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs" role="tablist">
+    <button class="tab activo" data-tab="chat">💬 Chat del cliente</button>
+    <button class="tab" data-tab="menu">🛍️ Menú y pedidos</button>
+    <button class="tab" data-tab="panel">🏪 Panel (mini-CRM)</button>
+    <button class="tab" data-tab="dashboard">📊 Dashboard</button>
+    <button class="tab" data-tab="marketing">📣 Marketing IA</button>
+  </div>
+
+  <!-- PESTAÑA CHAT -->
+  <div class="pestana activa" id="chat">
+    <div class="ventana-chat">
+      <div class="cabecera-chat">
+        <div class="avatar">🍽️</div>
+        <div class="datos">
+          <div class="nombre">Market Burger</div>
+          <div class="estado-sitio"><span class="punto-en-linea"></span> En línea · responde al instante</div>
+        </div>
+      </div>
+      <div class="chat" id="chat-canvas"></div>
+      <div class="campo-chat">
+        <input type="text" id="entrada" placeholder="Escribe tu mensaje, ej: ¿qué venden?" autocomplete="off">
+        <button class="boton accion" onclick="enviarMensaje()" title="Enviar">➤</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PESTAÑA MENÚ -->
+  <div class="pestana" id="menu">
+    <h2 class="titulo-seccion">🛍️ Nuestro menú</h2>
+    <p class="subtitulo-seccion">Elige lo que quieras y arma tu pedido. Al confirmar, se envía directo al WhatsApp del negocio.</p>
+    <div class="grid-menu" id="grid-menu"></div>
+  </div>
+
+  <!-- PESTAÑA PANEL -->
+  <div class="pestana" id="panel">
+    <div class="panel-card">
+      <h3>📥 Prospectos captados por el chat</h3>
+      <div class="filtros" id="filtros">
+        <button class="boton secundario" onclick="filtrar('todos')">Todos</button>
+        <button class="boton secundario" onclick="filtrar('nuevo')">Nuevos</button>
+        <button class="boton secundario" onclick="filtrar('contactado')">Contactados</button>
+        <button class="boton secundario" onclick="filtrar('vendido')">Vendidos</button>
+      </div>
+      <ul class="lista-prospectos" id="lista-prospectos">
+        <li class="vacio">Aún no hay prospectos. Pide una promo en el chat para captar el primero.</li>
+      </ul>
+      <button class="boton exito" onclick="exportarCSV()">⬇ Exportar CSV</button>
+      <button class="boton" onclick="limpiarProspectos()" style="margin-left:8px;background:#e63946;">Eliminar todos (demo)</button>
+    </div>
+    <div class="panel-card">
+      <h3>💡 Para probar la demo</h3>
+      <p>1. Ve a la pestaña 💬 Chat.<br>
+         2. Escribe: <em>"¿qué venden?"</em>, <em>"¿horarios?"</em> o directamente <em>"quiero la promo"</em>.<br>
+         3. Responde con un nombre, luego un teléfono y luego tu interés.<br>
+         4. Vuelve aquí: verás el prospecto registrado y podrás cambiar su estado (Nuevo → Contactado → Vendido).</p>
+    </div>
+  </div>
+
+  <!-- PESTAÑA DASHBOARD -->
+  <div class="pestana" id="dashboard">
+    <h2 class="titulo-seccion">📊 Dashboard del negocio</h2>
+    <div class="grid-metricas" id="metricas"></div>
+    <div class="panel-card">
+      <h3>📈 Entendiendo el valor para el dueño</h3>
+      <p>En un negocio real, estas cifras llegan solas: cuántos conversaron, cuántos dejaron sus datos y cuántos se convirtieron en venta. Eso es lo que MarketAttack visibiliza automáticamente.</p>
+    </div>
+  </div>
+
+  <!-- PESTAÑA MARKETING -->
+  <div class="pestana" id="marketing">
+    <div class="panel-card">
+      <h3>📣 Genera contenido desde una idea</h3>
+      <p>Escribe una promoción o noticia y MarketAttack genera textos para cada canal. Ejemplo: <em>"Tenemos 2x1 este fin de semana"</em>. <small style="color:#777;">(Demo con plantillas, la IA real llega en V4)</small></p>
+      <div class="gen-area">
+        <textarea id="idea-input" rows="3" placeholder="Describe tu promoción o novedad..."></textarea>
+        <button class="boton" onclick="generarMarketing()">✨ Generar contenido</button>
+      </div>
+      <div class="resultados-gen" id="resultados-gen"></div>
+    </div>
+  </div>
+
+</div>
+
+<a class="wa-flotante" id="wa-flotante" href="#" target="_blank" rel="noopener">💬 Pedir por WhatsApp</a>
+
+<script>
+/* =========================================================================
+   MARKETATTACK — TIENDA DEMO IA
+   Lógica compartida (base reutilizable).
+   Para un CLIENTE NUEVO solo se cambia el objeto CLIENTE abajo.
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. CONFIGURACIÓN DEL CLIENTE (cambiar por cada negocio)
+   ------------------------------------------------------------------------- */
+const CLIENTE = {
+  nombreComercial: "Market Burger",
+  nombreInterno: "marketburger", // usado como prefijo del almacenamiento
+  whatsapp: "573233316186",      // número de contacto (curiosamente es el del titular)
+  marca: {
+    tagline: "Las mejores hamburguesas de Ciudad Verde",
+    tono: "amigable y cercano"
+  },
+  info: {
+    horario: "Lunes a domingo de 11:00 a. m. a 10:00 p. m.",
+    ubicacion: "Calle 33 #37-41, Barrio Ciudad Verde, Soacha (Cundinamarca)",
+    contacto: "Pedidos y reservas: 323 331 6186"
+  },
+  menu: [
+    { nombre: "Hamburguesa Clásica", precio: "$18.000", desc: "Carne 120 g, queso, lechuga, tomate" },
+    { nombre: "Hamburguesa Doble", precio: "$24.000", desc: "Doble carne, doble queso, cebolla caramelizada" },
+    { nombre: "Hamburguesa BBQ", precio: "$22.000", desc: "Salsa BBQ, aros de cebolla, tocineta" },
+    { nombre: "Perro Sencillo", precio: "$12.000", desc: "Salchicha, papitas, salsas" },
+    { nombre: "Perro Especial", precio: "$16.000", desc: "Salchicha, papitas, queso, tocineta" },
+    { nombre: "Papas + Bebida", precio: "$10.000", desc: "Porción de papas con malteada/gaseosa" },
+    { nombre: "Combo Familiar", precio: "$65.000", desc: "4 hamburguesas + papas + gaseosa 1 L" }
+  ],
+  promociones: [
+    { titulo: "PROMO DEL VIERNES", texto: "Hamburguesa + bebida por solo $25.000. Solo este viernes." }
+  ],
+  preguntasFrecuentes: [
+    { p: "¿Cuánto demora el domicilio?", r: "Entre 30 y 45 minutos en Ciudad Verde y alrededores, según el destino." },
+    { p: "¿Aceptan pagos con tarjeta?", r: "Sí, aceptamos efectivo, tarjetas y datos de pago por trasferencia." },
+    { p: "¿Tienen opciones vegetarianas?", r: "Próximamente tendremos opciones veggie. Hoy las papas y bebidas son libres de carne." }
+  ]
+};
+
+/* Simula una IA real: junto a este demo se conectará un modelo (V4+).
+   Aquí usamos reglas y plantillas para mostrar el flujo completo y barato. */
+const KEY = "prospectos_" + CLIENTE.nombreInterno;
+
+const ETAPAS_CAPTURA = ["nombre", "telefono", "interes"];
+
+/* -------------------------------------------------------------------------
+   2. ESTADO DE LA SESIÓN
+   ------------------------------------------------------------------------- */
+let etapaCaptura = null;         // null | "nombre" | "telefono" | "interes"
+let prospectoParcial = {};
+let conversacion = [];
+
+/* -------------------------------------------------------------------------
+   3. MOTOR DE RESPUESTAS (reglas + plantillas)
+   ------------------------------------------------------------------------- */
+const RESPONSES = {
+  saludo: [
+    "¡Hola! Bienvenido a {negocio} 😊 Soy el asistente virtual. Te ayudo con el menú, precios, horarios, ubicación y promociones. ¿Qué deseas saber?",
+    "¡Hola! 😊 Gracias por escribirnos. ¿En qué podemos ayudarte? Puedes preguntar por el menú o las promociones."
+  ],
+  despedida: ["¡Gracias por escribirnos! Que tengas un excelente día 🌟", "¡Fue un gusto atenderte! Estamos para lo que necesites 🙌"],
+  gracias: ["¡Con gusto! 😊 ¿Quieres pedir algo o te interesa alguna promoción?", "¡Para eso estamos! 🍽️ ¿Te preparo una orden?"],
+  default: [
+    "No estoy seguro de entenderte 😅. Por ejemplo, puedo decirte el menú, los precios, el horario o contarte las promociones. ¿Sobre qué quieres saber?"
+  ]
+};
+
+function rellenar(texto, extra) {
+  let t = texto.replace("{negocio}", CLIENTE.nombreComercial);
+  if (extra) for (const k in extra) t = t.replaceAll("{" + k + "}", extra[k]);
+  return t;
+}
+
+function obtenerMenu() {
+  const lineas = CLIENTE.menu.map(m => "🍽️ " + m.nombre + " — " + m.precio + "\n   " + m.desc);
+  return "Nuestro menú:\n" + lineas.join("\n") + "\n\n" + promocionActual() + "\n¿Te interesa alguna de estas opciones? 😊";
+}
+
+function promocionActual() {
+  if (!CLIENTE.promociones.length) return "";
+  const p = CLIENTE.promociones[0];
+  return "🎉 " + p.titulo + ": " + p.texto;
+}
+
+function detectarIntencion(texto) {
+  const t = texto.toLowerCase();
+  if (/(hola|buenas|buenos días|buenas tardes|buenas noches|hey|qué más|bienvenido)/.test(t)) return "saludo";
+  const nombresMenu = (CLIENTE.menu || []).map(m => String(m.nombre || "").toLowerCase());
+  const mencionaProducto = nombresMenu.some(n => n && n.split(/\s+/).some(w => w.length > 3 && t.includes(w)));
+  if (/(menu|carta|comida|precios|precio|productos|bebida|plato|cu[aá]nto (cuesta|vale|es|est[aá])|\bvale\b|qu[eé] venden|que venden|qu[eé] tienen|que tienen)/.test(t) || mencionaProducto) return "menu";
+  if (/(horario|horarios|abren|cierran|abierto|cuándo abren)/.test(t)) return "horario";
+  if (/(ubicación|ubicacion|dirección|direccion|dónde|donde|cuál es la ubicación|mapa)/.test(t)) return "ubicacion";
+  if (/(promo|promoción|promocion|oferta|descuento|especial|combo.*promo|viernes)/.test(t)) return "promocion";
+  if (/(reparto|cuánto demora|cuanto demora|demora|llega|tiempo d)/.test(t)) return "reparto";
+  if (/(pago|pagar|tarjeta|efectivo|transferencia)/.test(t)) return "pago";
+  if (/(pedir|pedido|domicilio|envio|envío|comprar|reservar|reserva|cotizar)/.test(t)) return "pedido";
+  if (/(vegetariano|veggie|opciones sin carne|sin carne)/.test(t)) return "vegetariano";
+  if (/(gracias|muchas gracias|perfecto|ok|de acuerdo|genial|excelente)/.test(t)) return "gracias";
+  if (/(adiós|adios|chao|hasta luego|nos vemos|gracias.*adios)/.test(t)) return "despedida";
+  return "desconocido";
+}
+
+function responderConIntencion(intencion, texto) {
+  switch (intencion) {
+    case "saludo": return aleatorio(RESPONSES.saludo);
+    case "menu": return obtenerMenu();
+    case "horario": return "📍 Nuestro horario:\n" + CLIENTE.info.horario + "\n\n¿Quieres que te cuente el menú o las promociones?";
+    case "ubicacion": return "📍 Estamos en: " + CLIENTE.info.ubicacion + "\n\n" + CLIENTE.info.contacto;
+    case "promocion": {
+      if (!CLIENTE.promociones || !CLIENTE.promociones.length)
+        return "Por ahora no tenemos promociones activas 😊, pero con gusto te cuento el menú. ¿Qué te gustaría saber?";
+      return iniciarCaptura("🎉 " + CLIENTE.promociones[0].titulo + ": " + CLIENTE.promociones[0].texto);
+    }
+    case "pedido": return "¡Claro! 🛵 Hacemos pedidos y domicilios.\n\n" + obtenerMenu() + "\n\nCuéntame qué te gustaría pedir.";
+    case "pago": return "💳 Aceptamos efectivo, tarjeta y por transferencia. Al confirmar tu pedido te indicamos todos los medios.";
+    case "reparto": return preguntasRapidas("reparto");
+    case "vegetariano": return preguntasRapidas("vegetariano");
+    case "gracias": return aleatorio(RESPONSES.gracias);
+    case "despedida": return aleatorio(RESPONSES.despedida);
+    default: {
+      // Si el cliente menciona algo que parece un interés/compra, invita a capturar
+      if (/(promo|oferta|quiero|me interesa|cuánto|cuanto|comprar)/.test(texto.toLowerCase())) {
+        return iniciarCaptura(texto.trim());
+      }
+      return aleatorio(RESPONSES.default);
+    }
+  }
+}
+
+function preguntasRapidas(tema) {
+  const r = CLIENTE.preguntasFrecuentes.find(r => tema === "reparto" ? r.p.includes("domicilio") : r.p.includes("vegetariano"));
+  return r ? r.r : "Déjame verificarlo contigo 😊";
+}
+
+function iniciarCaptura(interes) {
+  etapaCaptura = "nombre";
+  prospectoParcial = { interes };
+  return "¡Perfecto! 🎉 Para registrar tu interés y que el dueño te contacte rápido, necesito primero tu **NOMBRE**, por favor 😊";
+}
+
+function extraerNumero(texto) {
+  const nums = texto.replace(/[^\d+]/g, "");
+  return nums.length >= 7 ? nums.slice(0, 13) : null;
+}
+
+function guardarProspecto() {
+  const p = { ...prospectoParcial, estado: "nuevo", fecha: new Date().toLocaleString("es-CO") };
+  const lista = leerProspectos();
+  lista.push(p);
+  localStorage.setItem(KEY, JSON.stringify(lista));
+  const nombre = prospectoParcial.nombre;
+  etapaCaptura = null;
+  prospectoParcial = {};
+  return "✅ ¡Listo " + nombre + "! Tu información quedó registrada y el restaurante ya recibió tu oportunidad. En breve te contactamos por WhatsApp. ¡Gracias por preferir " + CLIENTE.nombreComercial + "! 🍽️";
+}
+
+/* -------------------------------------------------------------------------
+   4. ALMACENAMIENTO DE PROSPECTOS (mini-CRM)
+   ------------------------------------------------------------------------- */
+function leerProspectos() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
+}
+
+function guardarListaProspectos(lista) {
+  localStorage.setItem(KEY, JSON.stringify(lista));
+}
+
+function cambiarEstadoProspecto(id, nuevoEstado) {
+  const lista = leerProspectos();
+  const p = lista.find(x => x.id === id);
+  if (p) { p.estado = nuevoEstado; guardarListaProspectos(lista); }
+}
+
+function eliminarProspecto(id) {
+  guardarListaProspectos(leerProspectos().filter(x => x.id !== id));
+}
+
+function limpiarProspectos() {
+  localStorage.removeItem(KEY);
+}
+
+/* -------------------------------------------------------------------------
+   5. FUNCIONALIDADES COMPARTIDAS
+   ------------------------------------------------------------------------- */
+function aleatorio(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function idsUnicos() {
+  const lista = leerProspectos();
+  lista.forEach((p, i) => { if (!p.id) p.id = Date.now() + "-" + i; });
+  guardarListaProspectos(lista);
+  return lista;
+}
+
+function templateProps() {
+  return {
+    negocio: CLIENTE.nombreComercial,
+    whatsapp: CLIENTE.whatsapp,
+    menu: CLIENTE.menu,
+    inf: CLIENTE.info,
+    promo: CLIENTE.promociones[0]
+  };
+}
+
+/* -------------------------------------------------------------------------
+   6. GENERADOR DE MARKETING (plantillas por canal)
+   ------------------------------------------------------------------------- */
+function generarContenido(idea) {
+  const t = templateProps();
+  return [
+    {
+      canal: "📸 Instagram",
+      texto: `🔥 ¡ALERTA DE PROMO! 🔥\n\n${idea}\n\n¿No quieres perderte esta oferta? Escríbenos YA al WhatsApp y asegura la tuya. 🍽️🥤\n\n📍 ${t.inf.ubicacion}\n⏰ ${t.inf.horario}\n\n#Promo #${CLIENTE.nombreComercial.replace(/\s/g, "")}`
+    },
+    {
+      canal: "📘 Facebook",
+      texto: `📌 Estamos de promoción este fin de semana.\n\n${idea}\n\nPide por inbox, déjanos tu nombre y teléfono, y te contactamos en minutos. 🚀\n\n${CLIENTE.nombreComercial} — Atención rápida y domicilios.`
+    },
+    {
+      canal: "💬 WhatsApp (broadcast)",
+      texto: `Hola 👋 Somos ${CLIENTE.nombreComercial}. Tenemos una oferta especialmente para ti:\n\n${idea}\n\n¡Responde este mensaje con tu nombre y teléfono para reservar la tuya! 🍽️`
+    },
+    {
+      canal: "🦋 Historias (CTA)",
+      texto: `🔥 Quiero la promo → [ENLACE WHATSAPP]\n\n${idea}\n\nSolo por tiempo limitado ⏰`
+    }
+  ];
+}
+
+/* Exportar funciones útiles para páginas nuevas */
+window.MarketAttack = {
+  CLIENTE,
+  KEY,
+  ETAPAS_CAPTURA,
+  leerProspectos,
+  guardarListaProspectos,
+  cambiarEstadoProspecto,
+  eliminarProspecto,
+  limpiarProspectos,
+  idsUnicos,
+  generarContenido,
+  generarIdea: () => CLIENTE.promociones[0] ? CLIENTE.promociones[0].texto : "",
+  estadoHorario,
+  compartirTienda
+};
+
+/* Título de la pestaña = nombre del negocio (no el genérico del motor) */
+if (typeof document !== "undefined" && CLIENTE && CLIENTE.nombreComercial) {
+  document.title = CLIENTE.nombreComercial + " · Tienda";
+}
+
+/* =========================================================================
+   ESTADO "ABIERTO / CERRADO" EN VIVO (a partir del horario del negocio)
+   Devuelve {abierto, detalle} o null si no se puede interpretar el horario.
+   ========================================================================= */
+const _DIAS = { domingo: 0, lunes: 1, martes: 2, miercoles: 3, jueves: 4, viernes: 5, sabado: 6,
+                dom: 0, lun: 1, mar: 2, mie: 3, jue: 4, vie: 5, sab: 6 };
+const _DIAS_RE = "domingo|lunes|martes|miercoles|jueves|viernes|sabado|dom|lun|mar|mie|jue|vie|sab";
+
+function _sinAcentos(s) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+function _diaNum(p) { return _DIAS[String(p).toLowerCase()] ?? null; }
+
+function _aMinutos(h1, mm1, mer1, h2, mm2, mer2) {
+  const toMin = (h, mm, mer) => {
+    h = +h; mm = mm ? +mm : 0;
+    if (mer === "pm" && h < 12) h += 12;
+    if (mer === "am" && h === 12) h = 0;
+    return h * 60 + mm;
+  };
+  const s = toMin(h1, mm1, mer1);
+  let e = toMin(h2, mm2, mer2);
+  // sin a.m./p.m. y con forma 12h donde el fin parece menor: asumimos tarde
+  if (!mer1 && !mer2 && e <= s && +h2 <= 12) e += 12 * 60;
+  return { s, e };
+}
+
+function _fmtHora(min) {
+  min = ((min % 1440) + 1440) % 1440;
+  let h = Math.floor(min / 60), m = min % 60;
+  const mer = h < 12 ? "a. m." : "p. m.";
+  let h12 = h % 12; if (h12 === 0) h12 = 12;
+  return h12 + ":" + (m < 10 ? "0" + m : m) + " " + mer;
+}
+
+function estadoHorario(ahora) {
+  ahora = ahora || new Date();
+  const raw = (CLIENTE.info && CLIENTE.info.horario) ? CLIENTE.info.horario : "";
+  if (!raw) return null;
+  let t = _sinAcentos(raw.toLowerCase())
+    .replace(/\ba\.?\s*m\.?/g, "am")
+    .replace(/\bp\.?\s*m\.?/g, "pm")
+    .replace(/[–—]/g, "-");
+
+  // --- días ---
+  let dias = null;
+  if (/todos los dias|\btodos\b/.test(t)) dias = [0, 1, 2, 3, 4, 5, 6];
+  if (!dias) {
+    const rango = t.match(new RegExp("\\b(" + _DIAS_RE + ")\\b\\s*(?:a|hasta)\\s*\\b(" + _DIAS_RE + ")\\b"));
+    if (rango) {
+      const a = _diaNum(rango[1]), b = _diaNum(rango[2]);
+      if (a !== null && b !== null) {
+        dias = []; let d = a;
+        for (let i = 0; i < 7; i++) { dias.push(d); if (d === b) break; d = (d + 1) % 7; }
+      }
+    } else {
+      const set = new Set();
+      (t.match(new RegExp("\\b(" + _DIAS_RE + ")\\b", "g")) || []).forEach(tk => {
+        const n = _diaNum(tk); if (n !== null) set.add(n);
+      });
+      if (set.size) dias = [...set];
+    }
+  }
+
+  // --- horas ---
+  const re = /(\d{1,2})(?::(\d{2}))?\s*(am|pm)?\s*(?:a|hasta|-|a las)\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/g;
+  const rangos = [];
+  let m;
+  while ((m = re.exec(t)) !== null) {
+    rangos.push(_aMinutos(m[1], m[2], m[3], m[4], m[5], m[6]));
+  }
+  if (!rangos.length) return null;
+
+  const dow = ahora.getDay();
+  const ahoraMin = ahora.getHours() * 60 + ahora.getMinutes();
+  const aplicaHoy = !dias || dias.includes(dow);
+
+  let abierto = false, cierraHoy = null, abreHoy = null;
+  if (aplicaHoy) {
+    for (const r of rangos) {
+      if (r.e >= r.s) {
+        if (ahoraMin >= r.s && ahoraMin < r.e) abierto = true;
+        if (r.s > ahoraMin && (abreHoy === null || r.s < abreHoy)) abreHoy = r.s;
+        if (r.e > ahoraMin && (cierraHoy === null || r.e < cierraHoy)) cierraHoy = r.e;
+      } else {
+        if (ahoraMin >= r.s || ahoraMin < r.e) abierto = true;
+        if (ahoraMin < r.e) cierraHoy = r.e;
+      }
+    }
+  }
+
+  let detalle;
+  if (abierto) detalle = (cierraHoy !== null) ? "Cierra " + _fmtHora(cierraHoy) : "Pedidos abiertos";
+  else if (aplicaHoy && abreHoy !== null) detalle = "Abre " + _fmtHora(abreHoy);
+  else {
+    // busca el próximo día con horario
+    let siguiente = null;
+    for (let k = 1; k <= 7; k++) {
+      const dk = (dow + k) % 7;
+      if (!dias || dias.includes(dk)) { siguiente = rangos[0].s; break; }
+    }
+    detalle = (siguiente !== null) ? "Abre " + _fmtHora(siguiente) : "";
+  }
+  return { abierto, detalle };
+}
+
+/* =========================================================================
+   UI opcional: estado, compartir y mapa (solo si existen los contenedores)
+   ========================================================================= */
+function compartirTienda() {
+  const url = (typeof location !== "undefined") ? location.href : "";
+  const titulo = CLIENTE.nombreComercial;
+  const texto = titulo + (CLIENTE.marca && CLIENTE.marca.tagline ? " — " + CLIENTE.marca.tagline : "") + "\n" + url;
+  if (typeof navigator !== "undefined" && navigator.share) {
+    navigator.share({ title: titulo, text: texto, url }).catch(() => {});
+  } else if (typeof window !== "undefined") {
+    window.open("https://wa.me/?text=" + encodeURIComponent(texto), "_blank");
+  }
+}
+
+function _iniciarUI() {
+  if (typeof document === "undefined" || typeof document.getElementById !== "function") return;
+  const estadoEl = document.getElementById("ma-estado");
+  if (estadoEl) {
+    const pintar = () => {
+      const e = estadoHorario(new Date());
+      if (!e) { estadoEl.style.display = "none"; return; }
+      estadoEl.style.display = "";
+      estadoEl.className = "ma-estado " + (e.abierto ? "abierto" : "cerrado");
+      estadoEl.textContent = (e.abierto ? "🟢 Abierto ahora" : "🔴 Cerrado ahora")
+        + (e.detalle ? " · " + e.detalle : "");
+    };
+    pintar();
+    setInterval(pintar, 60000);
+  }
+  const shareEl = document.getElementById("ma-compartir");
+  if (shareEl && typeof shareEl.addEventListener === "function") {
+    shareEl.addEventListener("click", (ev) => { ev.preventDefault(); compartirTienda(); });
+  }
+  const mapaEl = document.getElementById("ma-mapa");
+  if (mapaEl && CLIENTE.info && CLIENTE.info.ubicacion) {
+    const q = encodeURIComponent(CLIENTE.info.ubicacion);
+    mapaEl.innerHTML = '<iframe title="Ubicación" loading="lazy" '
+      + 'referrerpolicy="no-referrer-when-downgrade" '
+      + 'style="width:100%;height:300px;border:0;border-radius:14px" '
+      + 'src="https://www.google.com/maps?q=' + q + '&output=embed"></iframe>';
+  }
+}
+
+if (typeof document !== "undefined" && typeof document.addEventListener === "function") {
+  document.addEventListener("DOMContentLoaded", _iniciarUI);
+}
+</script>
+<script>
+/* ============ ESTADO LOCAL DE LA PÁGINA ============ */
+let intencionActual = "";
+let ultimoTextoCliente = "";
+
+/* ============ ALMACENAMIENTO (usa la base del CLIENTE) ============ */
+function leerProspectosLocal() {
+  return MarketAttack.leerProspectos();
+}
+
+function buscarPorId(lista, id) {
+  return lista.find(p => p.id === id);
+}
+
+/* ============ CHAT ============ */
+function horaActual() {
+  return new Date().toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
+}
+
+function agregarMensaje(tipo, texto, conChips, conEscribiendo) {
+  const chat = document.getElementById("chat-canvas");
+  const div = document.createElement("div");
+  div.className = "msg " + tipo;
+
+  if (tipo === "ia" || tipo === "sistema") {
+    const avatar = document.createElement("div");
+    avatar.className = "avatar-msg";
+    avatar.textContent = "🍽️";
+    div.appendChild(avatar);
+  }
+
+  const col = document.createElement("div");
+  col.style.maxWidth = "100%";
+
+  const burbuja = document.createElement("div");
+  burbuja.className = "burbuja";
+  burbuja.innerHTML = escapar(texto)
+    .replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")
+    .replace(/\n/g, "<br>");
+  col.appendChild(burbuja);
+
+  const hora = document.createElement("span");
+  hora.className = "hora";
+  hora.textContent = horaActual();
+  col.appendChild(hora);
+
+  div.appendChild(col);
+  chat.appendChild(div);
+
+  if (tipo === "cliente") {
+    const avatar = document.createElement("div");
+    avatar.className = "avatar-msg";
+    avatar.textContent = "👤";
+    div.appendChild(avatar);
+  }
+
+  if (conChips && Array.isArray(conChips) && conChips.length) {
+    const chips = document.createElement("div");
+    chips.className = "acciones-rapidas";
+    conChips.forEach(op => {
+      const b = document.createElement("button");
+      b.className = "chip";
+      b.textContent = op;
+      b.onclick = () => { agregarMensaje("cliente", op); procesarConsulta(op); };
+      chips.appendChild(b);
+    });
+    col.appendChild(chips);
+  }
+
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function mostrarEscribiendo() {
+  const chat = document.getElementById("chat-canvas");
+  const div = document.createElement("div");
+  div.className = "msg ia escribiendo-msg";
+  const avatar = document.createElement("div");
+  avatar.className = "avatar-msg";
+  avatar.textContent = "🍽️";
+  div.appendChild(avatar);
+  const burbuja = document.createElement("div");
+  burbuja.className = "burbuja escribiendo";
+  for (let i = 0; i < 3; i++) {
+    const punto = document.createElement("span");
+    punto.className = "punto";
+    burbuja.appendChild(punto);
+  }
+  div.appendChild(burbuja);
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function escapar(t) {
+  const d = document.createElement("div");
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+function procesarConsulta(texto) {
+  ultimoTextoCliente = texto;
+  responderConEspera();
+}
+
+function responderConEspera() {
+  const espera = mostrarEscribiendo();
+  const retraso = 700 + Math.random() * 500;
+  setTimeout(() => {
+    espera.remove();
+    procesarRespuestaInterna();
+  }, retraso);
+}
+
+function respuestaIA(texto, chips) {
+  responderConEsperaCon(texto, chips);
+}
+
+function responderConEsperaCon(iaTexto, chips) {
+  const espera = mostrarEscribiendo();
+  setTimeout(() => {
+    espera.remove();
+    agregarMensaje("ia", iaTexto, chips);
+  }, 600 + Math.random() * 400);
+}
+
+function procesarRespuestaInterna() {
+  const texto = ultimoTextoCliente || "";
+
+  // Si estamos capturando datos, el flujo es estricto
+  if (etapaCaptura) {
+    manejarCaptura(texto);
+    return;
+  }
+
+  const intencion = detectarIntencion(texto);
+  intencionActual = intencion;
+  const respuesta = responderConIntencion(intencion, texto);
+  if (respuesta) {
+    agregarMensaje("ia", respuesta, sugerencias(intencion));
+  }
+}
+
+function sugerencias(intencion) {
+  if (!intencion) {
+    // Primera interacción: ayudamos a romper el hielo
+    return ["¿Qué venden?", "¿Horarios?", "¿Dónde están?", "Quiero la promo"];
+  }
+  switch (intencion) {
+    case "menu": return ["Quiero la promo", "¿Hacen domicilios?", "¿Cuánto demora el reparto?"];
+    case "promocion": return [];
+    case "saludo": return ["¿Qué venden?", "Quiero la promo", "¿Horarios?"];
+    case "pedido": return ["Me interesa el combo familiar", "¿Aceptan tarjeta?"];
+    case "pago": return ["Hace un pedido", "Quiero la promo"];
+    default: return [];
+  }
+}
+
+function manejarCaptura(texto) {
+  if (etapaCaptura === "nombre") {
+    if (texto.trim().length < 2) {
+      respuestaIA("Disculpa, ¿cuál es tu nombre? 😊");
+      return;
+    }
+    prospectoParcial.nombre = texto.trim();
+    etapaCaptura = "telefono";
+    respuestaIA("¡Gracias " + prospectoParcial.nombre + "! 📱 Ahora me compartes tu **NÚMERO DE CELULAR** para contactarte.");
+    return;
+  }
+  if (etapaCaptura === "telefono") {
+    const num = extraerNumero(texto);
+    if (!num) {
+      respuestaIA("Ese número no parece valido 😅. Solo necesito tus dígitos para contactarte. ¿Me lo repites?");
+      return;
+    }
+    prospectoParcial.telefono = num;
+    etapaCaptura = "interes";
+    respuestaIA("¡Genial! 🎉 Y para terminar: ¿qué es lo que más te interesa de " + MarketAttack.CLIENTE.nombreComercial + "? (ej: las promociones, un combo, el domicilio...)");
+    return;
+  }
+  if (etapaCaptura === "interes") {
+    prospectoParcial.interesResumen = texto.trim() || "";
+    guardarProspectoLocal();
+  }
+}
+
+function guardarProspectoLocal() {
+  const lista = leerProspectosLocal();
+  lista.forEach((p, i) => { if (!p.id) p.id = Date.now() + "-" + i; });
+  const nuevo = {
+    id: Date.now() + "-" + lista.length,
+    ...prospectoParcial,
+    estado: "nuevo",
+    fecha: new Date().toLocaleString("es-CO")
+  };
+  lista.push(nuevo);
+  MarketAttack.guardarListaProspectos(lista);
+  const nombre = prospectoParcial.nombre;
+  etapaCaptura = null;
+  prospectoParcial = {};
+  respuestaIA("✅ ¡Listo " + nombre + "! Tu información quedó registrada y el restaurante ya recibió tu oportunidad. En breve te contactamos por WhatsApp. ¡Gracias por preferir " + MarketAttack.CLIENTE.nombreComercial + "! 🍽️");
+  actualizarPanel();
+  actualizarDashboard();
+}
+
+function enviarMensaje() {
+  const input = document.getElementById("entrada");
+  const texto = input.value.trim();
+  if (!texto) return;
+  agregarMensaje("cliente", texto);
+  input.value = "";
+  procesarConsulta(texto);
+}
+
+/* ============ PANEL (mini-CRM) ============ */
+let filtroActual = "todos";
+
+function actualizarPanel() {
+  const lista = MarketAttack.idsUnicos();
+  const ul = document.getElementById("lista-prospectos");
+  ul.innerHTML = "";
+  const filtrada = filtroActual === "todos" ? lista : lista.filter(p => p.estado === filtroActual);
+
+  if (filtrada.length === 0) {
+    ul.innerHTML = '<li class="vacio">No hay prospectos' + (filtroActual !== "todos" ? " en este estado" : "") + '.</li>';
+    return;
+  }
+
+  const etiquetas = { nuevo: "Nuevo", contactado: "Contactado", vendido: "Vendido" };
+
+  filtrada.forEach(p => {
+    const li = document.createElement("li");
+    li.innerHTML =
+      '<div class="info"><strong>' + escapar(p.nombre || "Sin nombre") + '</strong> — ' +
+      escapar(p.telefono || "-") + '<br><small style="color:#777;">Interés: ' +
+      escapar(p.interes || p.interesResumen || "-") + ' · ' + escapar(p.fecha || "-") + '</small></div>';
+
+    const sel = document.createElement("select");
+    sel.className = "estado " + p.estado;
+    Object.keys(etiquetas).forEach(k => {
+      const opt = document.createElement("option");
+      opt.value = k;
+      opt.textContent = etiquetas[k];
+      if (k === p.estado) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    sel.onchange = () => {
+      sel.className = "estado " + sel.value;
+      MarketAttack.cambiarEstadoProspecto(p.id, sel.value);
+      actualizarDashboard();
+    };
+
+    const btn = document.createElement("button");
+    btn.textContent = "✕";
+    btn.onclick = () => { MarketAttack.eliminarProspecto(p.id); actualizarPanel(); actualizarDashboard(); };
+    btn.style.cssText = "border:none;background:transparent;cursor:pointer;color:#e63946;font-weight:700;";
+
+    const ctrl = document.createElement("div");
+    ctrl.style.cssText = "display:flex;gap:6px;align-items:center;";
+    ctrl.appendChild(sel);
+    ctrl.appendChild(btn);
+    li.appendChild(ctrl);
+    ul.appendChild(li);
+  });
+}
+
+function filtrar(estado) {
+  filtroActual = estado;
+  document.querySelectorAll("#filtros .boton").forEach(b => b.removeAttribute("style"));
+  actualizarPanel();
+}
+
+function exportarCSV() {
+  const lista = MarketAttack.idsUnicos();
+  if (!lista.length) { alert("No hay prospectos para exportar."); return; }
+  const filas = [["Nombre", "Teléfono", "Interés", "Estado", "Fecha"]];
+  lista.forEach(p => filas.push([p.nombre, p.telefono, p.interes || "", p.estado, p.fecha]));
+  const csv = "\uFEFF" + filas.map(f => f.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "prospectos_" + MarketAttack.CLIENTE.nombreInterno + ".csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function limpiarProspectos() {
+  if (!confirm("¿Seguro que quieres eliminar todos los prospectos de la demo?")) return;
+  MarketAttack.limpiarProspectos();
+  actualizarPanel();
+  actualizarDashboard();
+}
+
+/* ============ DASHBOARD ============ */
+function actualizarDashboard() {
+  const lista = MarketAttack.idsUnicos();
+  const nuevos = lista.filter(p => p.estado === "nuevo").length;
+  const contactados = lista.filter(p => p.estado === "contactado").length;
+  const vendidos = lista.filter(p => p.estado === "vendido").length;
+  const total = lista.length;
+  const conversion = total ? Math.round((vendidos / total) * 100) : 0;
+
+  const c = document.getElementById("metricas");
+  c.innerHTML = [
+    { n: total, e: "Prospectos totales" },
+    { n: nuevos, e: "Nuevos por atender" },
+    { n: contactados, e: "Contactados" },
+    { n: vendidos, e: "Vendidos" },
+    { n: conversion + "%", e: "Conversión" }
+  ].map(m => '<div class="metrica"><div class="numero">' + m.n + '</div><div class="etiqueta">' + m.e + "</div></div>").join("");
+}
+
+/* ============ MARKETING ============ */
+function generarMarketing() {
+  const idea = document.getElementById("idea-input").value.trim();
+  if (!idea) { alert("Escribe primero la promoción o novedad."); return; }
+  const textos = MarketAttack.generarContenido(idea);
+  const cont = document.getElementById("resultados-gen");
+  cont.innerHTML = "";
+  textos.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "gen-bloque";
+    div.innerHTML = '<h4>' + t.canal + '</h4><textarea rows="4" readonly>' + escapar(t.texto) + '</textarea><button class="boton" style="margin-top:8px;" onclick="copiarTexto(this)">📋 Copiar</button>';
+    cont.appendChild(div);
+  });
+  cont.insertAdjacentHTML("afterbegin",
+    '<div class="gen-bloque" style="background:#eafaf1;border:1px solid #a9dfbf;"><span class="verde">✓ Generado por MarketAttack.</span> Recuerden: IA genera → humano revisa → humano aprueba → se publica. <small style="color:#777;">(Demo con plantillas, no es IA real aún)</small></div>');
+}
+
+function copiarTexto(btn) {
+  const ta = btn.parentElement.querySelector("textarea");
+  ta.select();
+  document.execCommand("copy");
+  btn.textContent = "✓ Copiado";
+  setTimeout(() => btn.textContent = "📋 Copiar", 1500);
+}
+
+/* ============ MENÚ / PRODUCTOS ============ */
+function renderMenu() {
+  const cont = document.getElementById("grid-menu");
+  if (!cont) return;
+  const menu = MarketAttack.CLIENTE.menu || [];
+  cont.innerHTML = "";
+  menu.forEach(m => {
+    const card = document.createElement("div");
+    card.className = "tarjeta-producto";
+    card.setAttribute("data-producto", "1");
+    card.innerHTML =
+      '<div class="nombre">' + escapar(m.nombre) + '</div>' +
+      '<div class="desc">' + escapar(m.desc || "") + '</div>' +
+      '<div class="precio">' + escapar(m.precio) + '</div>';
+    const acc = document.createElement("div");
+    acc.className = "acciones";
+    const btn = document.createElement("button");
+    btn.className = "boton";
+    btn.textContent = "🛒 Agregar";
+    btn.onclick = () => {
+      if (window.MarketAttackCarrito) window.MarketAttackCarrito.agregar(m.nombre, m.precio);
+      else alert("Carrito no disponible.");
+    };
+    acc.appendChild(btn);
+    card.appendChild(acc);
+    cont.appendChild(card);
+  });
+}
+
+/* ============ TABS ============ */
+(function tabs() {
+  const tabs = document.querySelectorAll(".tab");
+  const pestanas = document.querySelectorAll(".pestana");
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      tabs.forEach(t => t.classList.remove("activo"));
+      pestanas.forEach(p => p.classList.remove("activa"));
+      tab.classList.add("activo");
+      document.getElementById(tab.dataset.tab).classList.add("activa");
+    });
+  });
+})();
+
+/* ============ INICIO ============ */
+(function iniciar() {
+  actualizarPanel();
+  actualizarDashboard();
+  renderMenu();
+  (function waFlotante() {
+    var el = document.getElementById("wa-flotante");
+    if (!el) return;
+    var n = String(MarketAttack.CLIENTE.whatsapp || "").replace(/[^\d]/g, "");
+    if (n.length === 10 && n.charAt(0) === "3") n = "57" + n;
+    el.href = "https://wa.me/" + n;
+  })();
+  const sugerencias = ["¿Qué venden?", "¿Horarios?", "¿Dónde están?", "Quiero la promo"];
+  agregarMensaje("ia", "¡Hola! Soy el asistente de **🍽️ " + MarketAttack.CLIENTE.nombreComercial + "** 😊 Puedo decirte el menú, precios, horarios, ubicación o contarte las promociones. ¿Qué deseas saber?", sugerencias);
+  document.getElementById("entrada").addEventListener("keydown", e => { if (e.key === "Enter") enviarMensaje(); });
+})();
+</script>
+
+  <script>
+/* ============================================================================
+   🛒 CARRITO + MÉTODOS DE PAGO + REDES SOCIALES — MARKETATTACK
+   Módulo autocontenido e inyectable. Cero dependencia de la estructura del chat.
+   ============================================================================ */
+(function () {
+  "use strict";
+
+  if (document.getElementById("carrito-root")) return;
+
+  var CARRITO = [];
+  var medioSel = "";
+
+  var _MC = window.MarketAttack || {};
+  var _CL = _MC.CLIENTE || {};
+  var _waNum = String(_CL.whatsapp || "").replace(/[^\d]/g, "");
+  if (_waNum.length === 10 && _waNum.startsWith("3")) _waNum = "57" + _waNum;
+  var _waLink = "https://wa.me/" + _waNum + "?text=" + encodeURIComponent("Hola, quiero pedir");
+  var _waTexto = "💬 WhatsApp: " + (_waNum.length === 12 ? _waNum.slice(2).replace(/(\d{3})(\d{3})(\d{4})/, "$1 $2 $3") : _waNum);
+
+  function total() {
+    return CARRITO.reduce(function (ac, i) { return ac + (parsePrecio(i.precio) * (i.cant || 1)); }, 0);
+  }
+  function contar() {
+    return CARRITO.reduce(function (ac, i) { return ac + (i.cant || 1); }, 0);
+  }
+  function parsePrecio(s) {
+    var n = parseInt(String(s).replace(/[^0-9]/g, ""), 10);
+    return isNaN(n) ? 0 : n;
+  }
+  function moneda(n) { return "$" + n.toLocaleString("es-CO"); }
+
+  var css = document.createElement("style");
+  css.textContent = [
+    "#carrito-root{position:fixed;bottom:78px;right:16px;z-index:99999;font-family:system-ui,sans-serif;max-width:94vw}",
+    "#carrito-boton{background:#e63946;color:#fff;border:none;border-radius:999px;padding:13px 18px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);display:flex;align-items:center;gap:8px}",
+    "#carrito-boton .n{background:#fff;color:#e63946;border-radius:999px;padding:0 9px;font-size:13px;font-weight:800}",
+    "#carrito-panel{position:fixed;bottom:78px;right:18px;width:min(340px,92vw);max-height:70vh;overflow:auto;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.3);padding:16px;display:none}",
+    "#carrito-panel.abierto{display:block}",
+    "#carrito-panel h3{margin:0 0 10px;font-size:16px;color:#111}",
+    ".car-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed #eee;font-size:13.5px;gap:8px}",
+    ".car-item .lbl{flex:1;color:#222}",
+    ".car-item .prec{font-weight:700;color:#e63946;white-space:nowrap}",
+    ".car-q{display:flex;align-items:center;gap:6px;color:#333}",
+    ".car-q button{background:#f0f0f0;border:none;border-radius:6px;width:23px;height:23px;cursor:pointer;font-weight:700}",
+    "#carrito-total{font-weight:800;font-size:16px;text-align:right;margin:10px 0;color:#111}",
+    "#carrito-pago{width:100%;background:#27ae60;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;display:none}",
+    "#carrito-medios{margin-top:12px;border-top:1px solid #eee;padding-top:10px}",
+    "#carrito-medios h4{margin:0 0 8px;font-size:14px;color:#333}",
+    ".medio{display:flex;align-items:center;justify-content:space-between;border:1.5px solid #e0e0e0;border-radius:9px;padding:9px 12px;margin:5px 0;cursor:pointer;font-size:13.5px}",
+    ".medio.seleccionado{border-color:#27ae60;background:#eafaf1}",
+    ".medio .sel{width:14px;height:14px;border-radius:50%;border:2px solid #ccc;display:inline-block}",
+    ".medio.seleccionado .sel{border-color:#27ae60;background:#27ae60}",
+    "#carrito-confirmar{width:100%;background:#e63946;color:#fff;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px;display:none}",
+    "#carrito-ok{margin-top:10px;background:#eafaf1;border:1px solid #27ae60;border-radius:9px;padding:11px;font-size:13.5px;color:#145a2b;display:none}",
+    "#carrito-vacio{color:#999;font-size:13px;text-align:center;padding:14px 0}",
+    "#carrito-redes{margin-top:12px;border-top:1px solid #eee;padding-top:10px}",
+    "#carrito-redes h4{margin:0 0 8px;font-size:14px;color:#333}",
+    ".red-btna{display:block;width:100%;text-align:left;background:#f5f5f5;border:none;border-radius:8px;padding:9px 11px;margin:4px 0;cursor:pointer;font-size:13px;color:#222}",
+    ".red-btna:hover{background:#ececec}"
+  ].join("\n");
+  (document.head || document.documentElement).appendChild(css);
+
+  var root = document.createElement("div");
+  root.id = "carrito-root";
+  root.innerHTML =
+    '<div id="carrito-panel">' +
+    '  <h3>🛒 Tu pedido</h3>' +
+    '  <div id="carrito-items"><p id="carrito-vacio">Tu carrito está vacío. Elige algo del menú 👇</p></div>' +
+    '  <div id="carrito-total" style="display:none">Total: <span id="carrito-total-val">$0</span></div>' +
+    '  <button id="carrito-pago">💳 Elegir método de pago</button>' +
+    '  <div id="carrito-medios" style="display:none">' +
+    '    <h4>¿Cómo vas a pagar?</h4>' +
+    '    <div class="medio" data-medio="Efectivo al recibir"><span>💵 Efectivo al recibir</span><span class="sel"></span></div>' +
+    '    <div class="medio" data-medio="Tarjeta débito/crédito"><span>💳 Tarjeta (débito/crédito)</span><span class="sel"></span></div>' +
+    '    <div class="medio" data-medio="Nequi o transferencia"><span>🏦 Nequi / transferencia</span><span class="sel"></span></div>' +
+    '  </div>' +
+    '  <button id="carrito-confirmar">✅ Confirmar pedido</button>' +
+    '  <div id="carrito-ok"></div>' +
+    '  <div id="carrito-redes">' +
+    '    <h4>📲 Síguenos y pide por redes</h4>' +
+    '    <button class="red-btna" data-red="' + _waLink + '">' + _waTexto + '</button>' +
+    '    <button class="red-btna" data-red="https://instagram.com">📸 Instagram</button>' +
+    '    <button class="red-btna" data-red="https://facebook.com">📘 Facebook</button>' +
+    '    <button class="red-btna" data-red="https://tiktok.com">🎵 TikTok</button>' +
+    '  </div>' +
+    '</div>' +
+    '<button id="carrito-boton">🛒 Pedido <span class="n" id="carrito-cont">0</span></button>';
+
+  document.body.appendChild(root);
+
+  var panel = document.getElementById("carrito-panel");
+  var itemsEl = document.getElementById("carrito-items");
+  var contEl = document.getElementById("carrito-cont");
+  var totalEl = document.getElementById("carrito-total");
+  var totalVal = document.getElementById("carrito-total-val");
+  var pagoBtn = document.getElementById("carrito-pago");
+  var mediosEl = document.getElementById("carrito-medios");
+  var confirmarBtn = document.getElementById("carrito-confirmar");
+  var okEl = document.getElementById("carrito-ok");
+
+  function render() {
+    contEl.textContent = contar();
+    if (CARRITO.length === 0) {
+      itemsEl.innerHTML = '<p id="carrito-vacio">Tu carrito está vacío. Elige algo del menú 👇</p>';
+      totalEl.style.display = "none";
+      pagoBtn.style.display = "none";
+      mediosEl.style.display = "none";
+      confirmarBtn.style.display = "none";
+      okEl.style.display = "none";
+      return;
+    }
+    itemsEl.innerHTML = CARRITO.map(function (i, idx) {
+      return '<div class="car-item">' +
+        '<span class="lbl">' + i.nombre + '</span>' +
+        '<span class="prec">' + moneda(parsePrecio(i.precio) * (i.cant || 1)) + '</span>' +
+        '<span class="car-q"><button data-menos="' + idx + '">−</button> ' + (i.cant || 1) + ' <button data-mas="' + idx + '">+</button></span>' +
+        '</div>';
+    }).join("");
+    totalVal.textContent = moneda(total());
+    totalEl.style.display = "block";
+    pagoBtn.style.display = "block";
+    okEl.style.display = "none";
+  }
+
+  itemsEl.addEventListener("click", function (e) {
+    var mas = e.target.getAttribute("data-mas");
+    var menos = e.target.getAttribute("data-menos");
+    if (mas !== null) { CARRITO[+mas].cant = (CARRITO[+mas].cant || 1) + 1; render(); }
+    if (menos !== null) {
+      CARRITO[+menos].cant = (CARRITO[+menos].cant || 1) - 1;
+      if (CARRITO[+menos].cant <= 0) CARRITO.splice(+menos, 1);
+      render();
+    }
+  });
+
+  document.getElementById("carrito-boton").addEventListener("click", function () {
+    panel.classList.toggle("abierto");
+  });
+
+  pagoBtn.addEventListener("click", function () { mediosEl.style.display = "block"; });
+
+  mediosEl.addEventListener("click", function (e) {
+    var m = e.target.closest(".medio");
+    if (!m) return;
+    medioSel = m.getAttribute("data-medio");
+    var all = mediosEl.querySelectorAll(".medio");
+    for (var i = 0; i < all.length; i++) all[i].classList.remove("seleccionado");
+    m.classList.add("seleccionado");
+    confirmarBtn.style.display = "block";
+    okEl.style.display = "none";
+  });
+
+  function enviarWhatsApp() {
+    var cliente = (window.MarketAttack && window.MarketAttack.CLIENTE) || {};
+    var wa = cliente.whatsapp || "";
+    var waLimp = wa.replace(/[^\d]/g, "");
+    if (waLimp.length === 10 && waLimp.startsWith("3")) waLimp = "57" + waLimp;
+    var body = "*PEDIDO MARKETATTACK*\n\n";
+    body += CARRITO.map(function (i) { return "• " + i.cant + "x " + i.nombre + " — " + moneda(parsePrecio(i.precio) * (i.cant||1)); }).join("\n");
+    body += "\n\n*Total:* " + moneda(total());
+    body += "\n*Pago:* " + medioSel;
+    var url = "https://wa.me/" + waLimp + "?text=" + encodeURIComponent(body);
+    window.open(url, "_blank");
+  }
+
+  confirmarBtn.addEventListener("click", function () {
+    if (!medioSel) {
+      okEl.textContent = "❗ Primero elige un método de pago arriba.";
+      okEl.style.display = "block";
+      okEl.style.borderColor = "#e63946";
+      okEl.style.background = "#fdecea";
+      okEl.style.color = "#8a1a20";
+      return;
+    }
+    okEl.style.borderColor = "#27ae60";
+    okEl.style.background = "#eafaf1";
+    okEl.style.color = "#145a2b";
+    okEl.textContent = "✅ ¡Pedido confirmado por " + medioSel + " por " + moneda(total()) + "! Redirigiendo a WhatsApp...";
+    okEl.style.display = "block";
+    try {
+      var MC = window.MarketAttack;
+      if (MC && MC.guardarListaProspectos) {
+        var lista = (MC.leerProspectos ? MC.leerProspectos() : []);
+        lista.push({
+          id: Date.now() + "-" + Math.floor(Math.random() * 999),
+          nombre: "Cliente (pedido web)",
+          telefono: "—",
+          interes: "Pedido " + moneda(total()) + " · " + medioSel + " · " + CARRITO.map(function (i) { return i.cant + "x " + i.nombre; }).join(", "),
+          estado: "nuevo",
+          fecha: new Date().toLocaleString("es-CO")
+        });
+        MC.guardarListaProspectos(lista);
+      }
+    } catch (e) {}
+    setTimeout(enviarWhatsApp, 500);
+    CARRITO = [];
+    render();
+  });
+
+  root.addEventListener("click", function (e) {
+    var rb = e.target.closest(".red-btna");
+    if (rb) { window.open(rb.getAttribute("data-red"), "_blank"); }
+  });
+
+  window.MarketAttackCarrito = {
+    agregar: function (nombre, precio) {
+      var ex = null;
+      for (var i = 0; i < CARRITO.length; i++) { if (CARRITO[i].nombre === nombre) { ex = CARRITO[i]; break; } }
+      if (ex) { ex.cant = (ex.cant || 1) + 1; }
+      else { CARRITO.push({ nombre: nombre, precio: precio, cant: 1 }); }
+      render();
+    }
+  };
+
+  function enlazarMenu() {
+    var items = document.querySelectorAll(".producto, .menu-item, .tarjeta-producto, [data-producto], [class*=\"produc\"], .card");
+    if (!items.length) return;
+    for (var i = 0; i < items.length; i++) {
+      var el = items[i];
+      if (el.getAttribute("data-carro") === "1") continue;
+      var texto = (el.textContent || "").replace(/\s+/g, " ").trim();
+      var pc = (texto.match(/\$\s?[0-9][0-9.,]*/) || [])[0];
+      if (!pc) continue;
+      var nombre = (el.getAttribute("data-nombre") || el.querySelector("h3,h4,.nombre,.titulo") && el.querySelector("h3,h4,.nombre,.titulo").textContent || texto.split("$")[0]).trim();
+      if (!nombre) continue;
+      el.setAttribute("data-carro", "1");
+      var btn = document.createElement("button");
+      btn.textContent = "🛒 Agregar";
+      btn.style.cssText = "margin-left:8px;background:#e63946;color:#fff;border:none;border-radius:8px;padding:4px 10px;font-size:12px;cursor:pointer";
+      btn.onclick = function (nombre_, precio_) { return function (ev) { ev.preventDefault(); ev.stopPropagation(); window.MarketAttackCarrito.agregar(nombre_, precio_); }; }(nombre, pc);
+      el.appendChild(btn);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      enlazarMenu();
+      setInterval(function () { if (!panel.classList.contains("mas")) enlazarMenu(); }, 1500);
+    });
+  } else {
+    enlazarMenu();
+    setInterval(function () { enlazarMenu(); }, 1500);
+  }
+
+  console.log("[carrito] módulo listo ✔");
+})();
+
+</script>
+</body>
+</html>

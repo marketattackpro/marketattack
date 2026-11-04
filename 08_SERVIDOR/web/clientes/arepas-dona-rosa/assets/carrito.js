@@ -150,16 +150,19 @@
     okEl.style.display = "none";
   });
 
-  function enviarWhatsApp() {
+  function urlPedido() {
     var cliente = (window.MarketAttack && window.MarketAttack.CLIENTE) || {};
     var wa = cliente.whatsapp || "";
     var waLimp = wa.replace(/[^\d]/g, "");
     if (waLimp.length === 10 && waLimp.startsWith("3")) waLimp = "57" + waLimp;
-    var body = "*PEDIDO MARKETATTACK*\n\n";
+    var body = "*PEDIDO " + (cliente.nombreComercial || "MARKETATTACK").toUpperCase() + "*\n\n";
     body += CARRITO.map(function (i) { return "• " + i.cant + "x " + i.nombre + " — " + moneda(parsePrecio(i.precio) * (i.cant||1)); }).join("\n");
     body += "\n\n*Total:* " + moneda(total());
     body += "\n*Pago:* " + medioSel;
-    var url = "https://wa.me/" + waLimp + "?text=" + encodeURIComponent(body);
+    return "https://wa.me/" + waLimp + "?text=" + encodeURIComponent(body);
+  }
+
+  function enviarWhatsApp(url) {
     window.open(url, "_blank");
   }
 
@@ -192,7 +195,8 @@
         MC.guardarListaProspectos(lista);
       }
     } catch (e) {}
-    setTimeout(enviarWhatsApp, 500);
+    var url = urlPedido();          // se arma ANTES de vaciar el carrito
+    setTimeout(function () { enviarWhatsApp(url); }, 500);
     CARRITO = [];
     render();
   });

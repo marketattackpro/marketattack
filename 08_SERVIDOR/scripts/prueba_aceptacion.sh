@@ -110,6 +110,23 @@ else
   ok "la versión autocontenida está limpia"
 fi
 
+# el pedido de WhatsApp debe armarse ANTES de vaciar el carrito
+CART="$WEB/clientes/$SLUG/assets/carrito.js"
+if grep -Fq 'urlPedido' "$CART" 2>/dev/null; then
+  ok "el carrito arma el pedido con urlPedido()"
+  l_url=$(grep -n 'var url = urlPedido()' "$CART" | head -1 | cut -d: -f1)
+  l_vac=$(grep -n 'CARRITO = \[\]' "$CART" | tail -1 | cut -d: -f1)
+  if [ -n "$l_url" ] && [ -n "$l_vac" ] && [ "$l_url" -lt "$l_vac" ]; then
+    ok "el pedido se arma antes de vaciar el carrito"
+  else
+    mal "el carrito se vacía antes de armar el pedido (llegaría vacío)"
+  fi
+  grep -Fq 'nombreComercial' "$CART" && ok "el pedido lleva el nombre del negocio" \
+    || mal "el pedido no lleva el nombre del negocio"
+else
+  mal "el carrito no usa urlPedido() (riesgo de pedido vacío)"
+fi
+
 # archivos de imagen y menú
 for a in portada.png favicon.png icono.png menu.png; do
   head -c 4 "$WEB/clientes/$SLUG/assets/$a" 2>/dev/null | od -An -tx1 | grep -q "89 50 4e 47" \

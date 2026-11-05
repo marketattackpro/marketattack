@@ -22,6 +22,13 @@ for line in open(CFG):
         k, v = line.split("=", 1)
         cfg[k.strip()] = v.strip().strip('"')
 TOKEN, CHAT = cfg.get("TELEGRAM_TOKEN", ""), cfg.get("TELEGRAM_CHAT_ID", "")
+# Modelo que usa el bot para conversar. Se puede cambiar en telegram.conf:
+#   MODELO_PROVEEDOR=groq
+#   MODELO_ID=openai/gpt-oss-120b
+MODELO = {
+    "providerID": cfg.get("MODELO_PROVEEDOR", "groq"),
+    "modelID": cfg.get("MODELO_ID", "openai/gpt-oss-120b"),
+}
 PASS = ""
 for l in open("/etc/systemd/system/opencode.service"):
     if "OPENCODE_SERVER_PASSWORD=" in l:
@@ -77,6 +84,31 @@ def oc(m, path, body=None, timeout=1800):
 def sh(cmd, t=240):
     p = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=t)
     return (p.stdout or "") + (("\n" + p.stderr) if p.stderr.strip() else "")
+
+
+def agente(txt):
+    """Manda el mensaje al agente de OpenCode con un límite de tiempo corto.
+    Si el modelo falla o se demora, responde algo claro en vez de quedarse mudo."""
+    tg("sendChatAction", chat_id=CHAT, action="typing")
+    try:
+        r = oc("POST", f"/session/{sesion()}/message",
+               {"model": MODELO, "parts": [{"type": "text", "text": txt}]},
+               timeout=150)
+        s = "\n".join(p.get("text", "") for p in r.get("parts", [])
+                      if p.get("type") == "text").strip()
+        if s:
+            return s
+        return "✅ Recibido. No hubo texto de respuesta, pero el mensaje quedó guardado."
+    except Exception as e:
+        print("agente:", type(e).__name__, e)
+        return ("⚠ <b>No pude responder con el agente ahora mismo.</b>\n\n"
+                "El mensaje sí me llegó y quedó en la conversación.\n"
+                "Puedes seguir usando los comandos directos:\n"
+                "• <code>/estado</code> — cómo está todo\n"
+                "• <code>/captura</code> — guardar datos de un cliente\n"
+                "• <code>/solicitud</code> — pedir la ficha al cliente\n"
+                f"• <code>/ayuda</code> — todos los comandos\n\n"
+                f"<i>Detalle técnico: {html.escape(type(e).__name__)}</i>")
 
 
 def enviar(txt):
@@ -1025,11 +1057,7 @@ def procesar(txt):
             open(SESS_FILE, "w").write(sid)
             return "✅ Conversación nueva."
         # Si no es un comando conocido, trátalo como conversación natural con el agente
-        tg("sendChatAction", chat_id=CHAT, action="typing")
-        r = oc("POST", f"/session/{sesion()}/message",
-               {"parts": [{"type": "text", "text": txt}]}, timeout=1800)
-        s = "\n".join(p.get("text", "") for p in r.get("parts", []) if p.get("type") == "text")
-        return s or "Listo. He ejecutado lo que pediste."
+        return agente(txt)
     cap = _leer_captura()
     if cap:
         r = _agregar_captura(txt)
@@ -1042,11 +1070,7 @@ def procesar(txt):
     auto = intento_prospecto(txt)
     if auto:
         return auto
-    tg("sendChatAction", chat_id=CHAT, action="typing")
-    r = oc("POST", f"/session/{sesion()}/message",
-           {"parts": [{"type": "text", "text": txt}]}, timeout=1800)
-    s = "\n".join(p.get("text", "") for p in r.get("parts", []) if p.get("type") == "text")
-    return s or "Tarea ejecutada. Revisa los archivos del proyecto."
+    return agente(txt)
 
 
 def main():
@@ -1082,6 +1106,9 @@ def main():
                 continue
             print(">", (t or "[adjunto]")[:70])
             try:
+                if (t and not tiene_adj and not t.startswith("/")
+                        and not _leer_captura() and not _parece_ficha(t)):
+                    tg("sendMessage", chat_id=CHAT, text="📥 Recibido, pensando…")
                 res = procesar_adjunto(msg) if tiene_adj else procesar(t)
                 if res:
                     enviar(res)

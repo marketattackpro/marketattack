@@ -198,9 +198,9 @@ SAL=$(/usr/local/bin/verificar_tienda.sh todas 2>&1); rc=$?
 [ "$rc" -eq 0 ] && ok "todas las tiendas siguen aprobadas" || mal "alguna tienda quedó con problemas"
 [ "$rc" -eq 0 ] || echo "$SAL" | sed 's/^/     /'
 
-# ── 8) recepción de datos por Telegram ──
-paso "8) recepción de datos por Telegram"
-python3 - <<'PY' && ok "guarda fichas, capturas, adjuntos y limpia" || mal "la recepción de datos por Telegram falló"
+# ── 8) recepción de datos y respuesta por Telegram ──
+paso "8) recepción de datos y respuesta por Telegram"
+python3 - <<'PY' && ok "guarda fichas y responde aunque el modelo falle" || mal "la recepción/respuesta por Telegram falló"
 import importlib.util, os, glob, tempfile, shutil
 spec = importlib.util.spec_from_file_location("pt", "/usr/local/bin/puente_telegram.py")
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -232,7 +232,15 @@ try:
     assert "cancelada" in m.procesar("/cancelar")
     assert m._leer_captura() is None
     assert not glob.glob(os.path.join(m.DIR_ENTRADAS, "_borrador_*.txt"))
-    print("     ficha, /datos, captura y cancelación OK")
+    # si el agente no responde, el bot avisa en vez de quedarse mudo
+    m.tg = lambda *a, **k: None
+    m.sesion = lambda: "ses_prueba"
+    def _caido(*a, **k):
+        raise RuntimeError("modelo caído")
+    m.oc = _caido
+    r = m.agente("hola")
+    assert "No pude responder" in r, r
+    print("     ficha, /datos, captura, cancelación y aviso de fallo OK")
 finally:
     shutil.rmtree(tmp, ignore_errors=True)
 PY

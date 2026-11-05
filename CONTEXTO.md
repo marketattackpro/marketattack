@@ -824,3 +824,21 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
 - Respaldo de esta mejora: `completo_20261105_0058.tar.gz` (35 copias en las
   vías A y B). GitHub y PC se actualizan al cerrar el cambio.
 
+### Respuesta del bot por Telegram (chat de ida y vuelta)
+- El bot dejó de quedarse mudo: si el modelo no responde, contesta con un
+  aviso claro en vez de bloquear el hilo.
+- Se cambió el modelo de conversación a **Groq `openai/gpt-oss-120b`**, porque
+  el modelo gratuito anterior agotó su cuota diaria
+  (“Free usage exceeded, subscribe to Go”).
+- La clave de Groq se registra con `configurar_modelo.sh`, que lee la que ya
+  usa el chat de la tienda (`/etc/marketattack/ia.conf`) y la guarda en
+  OpenCode. Ese paso hay que repetirlo después de restaurar un respaldo.
+- Se creó una **sesión nueva** para Telegram (`Telegram MARKETATTACK`) porque
+  la anterior tenía más de 1.000 mensajes y no cabía en el modelo nuevo.
+- El bot ahora avisa **“📥 Recibido, pensando…”** y tiene un límite de espera
+  de 150 s; una demora ya no deja el servicio trabado.
+- Probado de punta a punta: un mensaje llega, el agente responde y el usuario
+  recibe la respuesta en Telegram.
+- La prueba de aceptación (bloque 8) también comprueba que, si el modelo falla,
+  el bot avisa en vez de quedarse callado.
+

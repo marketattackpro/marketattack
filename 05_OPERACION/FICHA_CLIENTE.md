@@ -1,31 +1,9 @@
 # FICHA DEL CLIENTE — datos para armar la tienda
 
-Copia este mensaje y envíalo por WhatsApp cuando el cliente diga que sí.
+La solicitud completa está en `05_OPERACION/SOLICITUD_INICIO_CLIENTE.md`.
+La versión breve está en `05_OPERACION/SOLICITUD_CORTA.md`.
 
----
-
-## Mensaje para pedir los datos
-
-```
-¡Hola [NOMBRE]! 🙌 Qué bueno tenerte en MARKETATTACK.
-
-Para dejar tu tienda lista necesito estos datos. Puedes responderme
-por aquí, en un solo mensaje, así:
-
-1. Nombre del negocio:
-2. Tu nombre:
-3. WhatsApp del negocio (con indicativo 57):
-4. ¿Qué vendes? (en una frase):
-5. Horario de atención:
-6. Ciudad o barrio:
-7. Productos o servicios con precio (los principales, 5 a 10):
-8. ¿Haces domicilio? ¿Tiene costo?
-9. Métodos de pago (Nequi, Daviplata, efectivo, otro):
-10. Promoción o frase de bienvenida (opcional):
-11. Logo o fotos (opcional, me las envías por aquí):
-
-Con eso te armo la tienda y te mando el link para que la revises.
-```
+En Telegram se envían con `/solicitud` y `/solicitud corta`.
 
 ---
 
@@ -34,19 +12,30 @@ Con eso te armo la tienda y te mando el link para que la revises.
 ```
 Negocio:
 Slug:
-Contacto:
+Contacto / dueño:
 WhatsApp:
 Plan:
 Valor mensual:
 Fecha de pago:
 Vence:
-Ciudad:
+Ciudad / barrio:
+Dirección o referencia:
 Horario:
-Domicilio:
+Domicilio (zonas y costo):
+Tiempo de entrega:
+Pedido mínimo:
 Métodos de pago:
+Titular de la cuenta (opcional):
 Promoción:
+Redes sociales:
+Logo / fotos:
+Garantías o cambios:
+Reglas especiales:
+Autorización de marca y pedidos:
 Observaciones:
 ```
+
+---
 
 ## Reglas al recibir los datos
 
@@ -55,5 +44,7 @@ Observaciones:
 - Cada producto se escribe así: `Nombre|Precio|Descripción corta`.
 - Si el cliente no da descripción, se escribe algo simple y útil.
 - Si no da logo, se usa el ícono de MARKETATTACK; nunca se deja vacío.
-- Antes de publicar, **confirma por escrito** que los precios y el horario
-  están bien.
+- Antes de publicar, **confirma por escrito** que los precios, el horario y
+  el WhatsApp están bien.
+- Si el cliente manda los datos por Telegram, quedan guardados en
+  `05_CLIENTES/_entradas/` (ver `RECEPCION_DATOS_TELEGRAM.md`).

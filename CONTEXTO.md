@@ -800,3 +800,24 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
   operación).
 - PC → nube (Telegram): kit del día enviado.
 - Validación general: `TODO CORRECTO` (8 reglas de cron, 0 fugas de secretos).
+
+### Recepción de datos del cliente por Telegram
+- El bot ya no solo manda avisos: también **recibe y guarda** los datos del
+  cliente. Así se puede trabajar desde el celular cuando el PC está apagado.
+- Comandos nuevos: `/solicitud`, `/solicitud corta`, `/datos`, `/captura`,
+  `/fin`, `/cancelar`.
+- Si el mensaje pegado trae 4 o más campos de la ficha, se guarda solo.
+- Acepta fotos, PDF, Excel e imágenes; límite 20 MB por archivo.
+- Todo queda en `05_CLIENTES/_entradas/` con `.txt` + `.json` y `adjuntos/`.
+  Esa carpeta **no** se publica en GitHub; viaja en los respaldos privados.
+- La solicitud se amplió de 11 a 42 puntos agrupados en 8 bloques:
+  negocio, contacto, catálogo, pedidos/entrega, pagos, marca, operación y
+  legal.
+- Solo el chat autorizado puede escribir. Los nombres de archivo se generan
+  con fecha; no se usa ninguna ruta enviada por el usuario.
+- Documentos actualizados: `SOLICITUD_INICIO_CLIENTE.md`,
+  `SOLICITUD_CORTA.md`, `FICHA_CLIENTE.md`, `RECEPCION_DATOS_TELEGRAM.md`.
+- Probado con ficha temporal, captura de dos mensajes y cancelación; los
+  archivos de prueba se borraron. Falta la prueba real enviando datos desde
+  el celular.
+

@@ -13,7 +13,8 @@ CFG = "/etc/marketattack/telegram.conf"
 API = "http://127.0.0.1:4096"
 SESS_FILE = "/etc/marketattack/telegram_session"
 DIARIO = "/home/personalamd/Documentos/Default Project"
-IP = "149.130.190.118"
+IP = "157.137.203.223"
+WEB = "https://marketattack.duckdns.org"
 
 cfg = {}
 for line in open(CFG):
@@ -478,16 +479,22 @@ def cmd_fin():
             contenido = fh.read()
     except OSError:
         contenido = ""
+    if len(contenido.strip()) < 5:
+        try:
+            os.remove(ruta)
+        except OSError:
+            pass
+        _borrar_captura()
+        return "🗑 La captura estaba vacía. No se guardó nada."
+    # Guardar primero y solo borrar el borrador si el archivo final quedó bien.
+    destino, campos = _guardar_entrada(contenido, "Telegram (captura)")
+    if not destino:
+        return "⚠ No pude guardar la captura. El borrador sigue abierto; prueba /fin otra vez."
     try:
         os.remove(ruta)
     except OSError:
         pass
     _borrar_captura()
-    if len(contenido.strip()) < 5:
-        return "🗑 La captura estaba vacía. No se guardó nada."
-    destino, campos = _guardar_entrada(contenido, "Telegram (captura)")
-    if not destino:
-        return "⚠ No pude guardar la captura."
     return _confirmar_guardado(destino, campos)
 
 
@@ -615,11 +622,12 @@ def procesar_adjunto(msg):
 
 def cmd_estado():
     web = sh("curl -s -o /dev/null -w '%{http_code}' --max-time 8 http://127.0.0.1/tienda.html").strip()
-    ext = sh("curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://" + IP + "/tienda.html").strip()
+    ext = sh("curl -s -o /dev/null -w '%{http_code}' --max-time 10 " + WEB + "/tienda.html").strip()
     disco = sh("df -h / | tail -1 | awk '{print $4\" de \"$2\" libres\"}'").strip()
     ram = sh("free -m | awk '/Mem:/{print $7\" MB de \"$2\" libres\"}'").strip()
-    nres = sh("ls -1 /var/backups/marketattack/*.tar.gz 2>/dev/null | wc -l").strip()
-    ult = sh("ls -1t /var/backups/marketattack/*.tar.gz 2>/dev/null | head -1 | xargs -r ls -lh | awk '{print $6\" \"$7\" \"$8}'").strip()
+    nres = sh("ls -1 /var/backups/marketattack/completos/completo_*.tar.gz 2>/dev/null | wc -l").strip()
+    nesp = sh("ls -1 /root/marketattack-rescate/completo_*.tar.gz 2>/dev/null | wc -l").strip()
+    ult = sh("ls -1t /var/backups/marketattack/completos/completo_*.tar.gz 2>/dev/null | head -1 | xargs -r ls -lh | awk '{print $6\" \"$7\" \"$8}'").strip()
     nent = len(glob.glob(os.path.join(DIR_ENTRADAS, "cliente_*.txt")))
     srv = sh("systemctl is-active opencode").strip()
     puent = sh("systemctl is-active puente-telegram").strip()
@@ -627,7 +635,7 @@ def cmd_estado():
             f"Web servidor: <b>{web}</b> {'✅' if web == '200' else '❌'}\n"
             f"Web internet: <b>{ext}</b> {'✅' if ext == '200' else '❌'}\n"
             f"opencode: <b>{srv}</b> · puente: <b>{puent}</b>\n\n"
-            f"💾 {disco}\n🧠 {ram}\n🗄 Respaldos: {nres} · último {ult or '—'}\n"
+            f"💾 {disco}\n🧠 {ram}\n🗄 Respaldos: {nres} · espejo {nesp} · último {ult or '—'}\n"
             f"📥 Entradas de clientes: {nent}\n"
             f"🕒 Copia diaria 3:00 AM (sin PC)")
 
@@ -640,7 +648,7 @@ def cmd_clientes():
     for s in [x.strip() for x in d.splitlines() if x.strip()]:
         code = sh(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 8 http://127.0.0.1/clientes/{s}/tienda.html").strip()
         qr = sh(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 8 http://127.0.0.1/clientes/{s}/qr.png").strip()
-        out += f"✅ <b>{s}</b> (web {code}, QR {qr})\n   http://{IP}/clientes/{s}/tienda.html\n\n"
+        out += f"✅ <b>{s}</b> (web {code}, QR {qr})\n   {WEB}/clientes/{s}/tienda.html\n\n"
     return out
 
 
@@ -998,13 +1006,13 @@ def procesar(txt):
             sh("/usr/local/bin/backup_marketattack.sh", t=300)
             return "💾 Respaldo creado."
         if c == "/link":
-            return (f"🔗 <b>ENLACES</b>\n\nDemo: http://{IP}/tienda.html\n"
-                    f"Portafolio: http://{IP}/kit.html\nNetlify: https://marketattack.netlify.app/tienda.html")
+            return (f"🔗 <b>ENLACES</b>\n\nDemo: {WEB}/tienda.html\n"
+                    f"Portafolio: {WEB}/kit.html\nNetlify: https://marketattack.netlify.app/tienda.html")
         if c == "/qr":
             ruta = "/tmp/qr_actual.png"
-            sh(f"python3 /usr/local/bin/qr_tienda.py 'http://{IP}/tienda.html' '{ruta}' 'MARKETATTACK'")
+            sh(f"python3 /usr/local/bin/qr_tienda.py '{WEB}/tienda.html' '{ruta}' 'MARKETATTACK'")
             if os.path.exists(ruta):
-                tg_foto(ruta, f"QR de la tienda\nhttp://{IP}/tienda.html")
+                tg_foto(ruta, f"QR de la tienda\n{WEB}/tienda.html")
             return
         if c == "/leer":
             return "📋 CONTEXTO.md\n\n" + open(f"{DIARIO}/CONTEXTO.md", errors="ignore").read()[:3400]

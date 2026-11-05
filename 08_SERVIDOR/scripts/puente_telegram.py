@@ -6,7 +6,7 @@
 ╚═══════════════════════════════════════════════════════════╝
 """
 import json, os, re, subprocess, sys, time, base64
-import datetime, glob, html
+import datetime, glob, html, unicodedata
 import urllib.request, urllib.parse
 
 CFG = "/etc/marketattack/telegram.conf"
@@ -118,6 +118,12 @@ AYUDA = """🤖 <b>MARKETATTACK — comandos</b>
 🆕 <b>Clientes</b>
 /cliente — crear tienda para un cliente (te explico abajo)
 
+📥 <b>Datos del cliente</b>
+/solicitud — mensaje completo para pedir los datos
+/solicitud corta — versión breve
+/datos — guardar los datos de un solo mensaje
+/captura — recibir por partes · /fin archiva · /cancelar descarta
+
 ⚙️ <b>Operación</b>
 /estado · /respaldos · /publicar · /backup
 
@@ -160,6 +166,453 @@ Zona: Soacha
 Yo te respondo con el link y el QR."""
 
 
+# ═══════════════════════════════════════════════════════════
+#  RECEPCIÓN DE DATOS DEL CLIENTE (Telegram)
+#  Guarda lo que llegue en 05_CLIENTES/_entradas/ y deja un
+#  JSON con los campos detectados. No publica nada solo.
+# ═══════════════════════════════════════════════════════════
+DIR_ENTRADAS = os.path.join(DIARIO, "05_CLIENTES", "_entradas")
+DIR_ADJUNTOS = os.path.join(DIR_ENTRADAS, "adjuntos")
+ARCHIVO_CAPTURA = "/var/lib/marketattack/captura_actual.json"
+MAX_TEXTO = 30000
+MAX_ADJUNTO = 20 * 1024 * 1024
+
+
+SOLICITUD_COMPLETA = """¡Hola [NOMBRE]! 🙌 Bienvenido(a) a MARKETATTACK.
+
+Para dejarte la tienda completa y vendiendo desde el primer día, cuéntame esto. Puedes responder en un solo mensaje o por partes. Si algo no lo tienes, escribe “no tengo”.
+
+<b>1) NEGOCIO</b>
+• Nombre exacto como debe aparecer:
+• Nombre de quien atiende / dueño:
+• ¿Qué vendes? (una frase):
+• ¿Qué te hace diferente?:
+• Historia o años del negocio (opcional):
+
+<b>2) CONTACTO</b>
+• WhatsApp para pedidos (con 57, sin + ni espacios):
+• Teléfono alterno:
+• Ciudad, barrio y dirección o punto de referencia:
+• ¿Local físico visitable?:
+• Instagram / Facebook / TikTok:
+• Página web o catálogo actual:
+
+<b>3) CATÁLOGO (lo más importante)</b>
+• Lista de productos así: nombre | precio | descripción corta | categoría | disponible (sí/no)
+  Ej: Arepa de queso | 8000 | Queso doble | Arepas | sí
+• ¿Cuántos productos manejas en total?:
+• ¿Hay agotados, por encargo o de temporada?:
+• ¿Combos, promociones o precios por mayor?:
+• ¿Cada cuánto cambian los precios?:
+
+<b>4) PEDIDOS Y ENTREGA</b>
+• Horario de atención (días y horas):
+• ¿Cómo prefieres recibir pedidos? WhatsApp / llamada / ambos:
+• ¿Domicilio? Zonas y costo:
+• Tiempo promedio de preparación o entrega:
+• ¿Pedido mínimo?:
+• ¿Qué hacemos si un producto no está disponible?:
+• ¿Pedidos para fechas especiales o por encargo?:
+
+<b>5) PAGOS</b>
+• Métodos: Nequi / Daviplata / transferencia / efectivo / tarjeta:
+• Número o titular para pagos (solo si quieres mostrarlo):
+• ¿Pago contra entrega?:
+• ¿Pides anticipo? ¿En qué casos?:
+• ¿Quién confirma el pago y cómo?:
+
+<b>6) MARCA E IMAGEN</b>
+• Logo (archivo o foto; si no tienes, lo hacemos):
+• De 3 a 10 fotos de productos o del local:
+• Colores o estilo que te gustan:
+• Frase de bienvenida o promoción:
+• ¿Algo que NO quieres que aparezca?:
+
+<b>7) OPERACIÓN Y SOPORTE</b>
+• ¿Quién responde los pedidos y en qué horario?:
+• ¿Qué hacemos fuera de horario?:
+• ¿Garantía, cambios o devoluciones?:
+• ¿Qué datos necesitas del comprador? (nombre, dirección, referencia…):
+• ¿Alguna regla especial? (zona, edad, mínimo…):
+
+<b>8) LEGAL Y AUTORIZACIÓN</b>
+• ¿Persona natural o empresa con RUT/NIT?:
+• ¿Autorizas usar tu logo y fotos en la tienda y redes de MARKETATTACK?:
+• ¿Autorizas que los pedidos lleguen a tu WhatsApp?:
+• Nombre y documento de quien autoriza (opcional):
+
+📎 Si tienes logo, fotos o lista de precios en PDF/Excel, envíalos por aquí.
+✅ Con esto armo tu tienda, te mando el link para revisar y publicamos."""
+
+
+SOLICITUD_CORTA = """¡Hola [NOMBRE]! 🙌 Para arrancar tu tienda necesito:
+
+1. Nombre del negocio:
+2. Tu nombre:
+3. WhatsApp para pedidos (con 57, sin + ni espacios):
+4. ¿Qué vendes? (una frase):
+5. Horario de atención:
+6. Ciudad / barrio / dirección:
+7. Productos: nombre | precio | descripción (5 a 10 principales):
+8. ¿Domicilio? Zonas y costo:
+9. Métodos de pago que aceptas:
+10. Logo y fotos (opcional, envíalos por aquí):
+
+✅ Con esto te mando el link de tu tienda para revisar."""
+
+
+CAMPOS_CONOCIDOS = {
+    "nombre del negocio": "negocio", "nombre negocio": "negocio",
+    "negocio": "negocio", "nombre comercial": "negocio",
+    "nombre": "contacto", "tu nombre": "contacto",
+    "nombre de quien atiende": "contacto", "dueno": "contacto",
+    "propietario": "contacto", "contacto": "contacto",
+    "whatsapp": "whatsapp", "whatsapp para pedidos": "whatsapp",
+    "telefono": "telefono", "telefono alterno": "telefono",
+    "ciudad": "ciudad", "barrio": "ciudad", "zona": "ciudad",
+    "direccion": "direccion", "ubicacion": "ciudad",
+    "horario": "horario", "horario de atencion": "horario",
+    "que vendes": "descripcion", "descripcion": "descripcion",
+    "que te hace diferente": "diferencial",
+    "productos": "productos", "productos con precio": "productos",
+    "menu": "productos", "catalogo": "productos",
+    "domicilio": "domicilio", "metodos de pago": "pagos", "pagos": "pagos",
+    "promocion": "promocion", "redes sociales": "redes", "redes": "redes",
+    "logo": "logo", "pedido minimo": "pedido_minimo",
+    "tiempo de entrega": "entrega", "tiempo promedio de entrega": "entrega",
+}
+
+
+def _ahora():
+    return datetime.datetime.now()
+
+
+def _texto_limpio(t):
+    """Quita caracteres de control y limita el tamaño. No interpreta nada."""
+    t = (t or "").replace("\x00", "")
+    t = "".join(ch for ch in t if ch in "\n\t" or ord(ch) >= 32)
+    return t.strip()[:MAX_TEXTO]
+
+
+def _permiso(ruta):
+    """Los archivos los crea root; se los dejo legibles al dueño del proyecto."""
+    try:
+        st = os.stat(DIARIO)
+        os.chown(ruta, st.st_uid, st.st_gid)
+        os.chmod(ruta, 0o640)
+    except Exception:
+        pass
+
+
+def _preparar_dirs():
+    for d in (os.path.join(DIARIO, "05_CLIENTES"), DIR_ENTRADAS, DIR_ADJUNTOS):
+        os.makedirs(d, exist_ok=True)
+        try:
+            st = os.stat(DIARIO)
+            os.chown(d, st.st_uid, st.st_gid)
+            os.chmod(d, 0o750)
+        except Exception:
+            pass
+
+
+def _norm_campo(s):
+    s = unicodedata.normalize("NFKD", (s or "").lower())
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    s = re.sub(r"^\s*\d+\s*[.)]?\s*", "", s)
+    s = re.sub(r"[¿?*_]", "", s)
+    return re.sub(r"\s+", " ", s).strip(" :.-")
+
+
+def _extraer_campos(texto):
+    """Detecta los campos de la ficha sin depender del orden."""
+    campos = {}
+    for linea in texto.splitlines():
+        if ":" not in linea:
+            continue
+        k, v = linea.split(":", 1)
+        nk = _norm_campo(k)
+        v = v.strip()
+        if not nk or not v or len(nk) > 80:
+            continue
+        for alias, clave in CAMPOS_CONOCIDOS.items():
+            if nk == alias or nk.startswith(alias + " ") or nk.startswith(alias + "("):
+                campos.setdefault(clave, v[:600])
+                break
+    return campos
+
+
+def _parece_ficha(texto):
+    """True solo si el mensaje trae varios campos de la ficha."""
+    campos = _extraer_campos(texto)
+    return len(campos) >= 4 and ("whatsapp" in campos or "productos" in campos
+                                 or "negocio" in campos)
+
+
+def _guardar_entrada(texto, origen="Telegram", etiqueta=""):
+    texto = _texto_limpio(texto)
+    if not texto:
+        return None, {}
+    _preparar_dirs()
+    base = _ahora().strftime("cliente_%Y%m%d_%H%M%S")
+    ruta = os.path.join(DIR_ENTRADAS, base + ".txt")
+    n = 2
+    while os.path.exists(ruta):
+        ruta = os.path.join(DIR_ENTRADAS, f"{base}_{n}.txt")
+        n += 1
+    campos = _extraer_campos(texto)
+    cab = ("# DATOS DE CLIENTE · MARKETATTACK\n"
+           f"Fecha: {_ahora().strftime('%Y-%m-%d %H:%M:%S')}\n"
+           f"Origen: {origen}\n"
+           f"Etiqueta: {etiqueta or '-'}\n"
+           + "=" * 52 + "\n\n")
+    with open(ruta, "w", encoding="utf-8") as fh:
+        fh.write(cab + texto + "\n")
+    meta = {
+        "fecha": _ahora().isoformat(timespec="seconds"),
+        "origen": origen,
+        "etiqueta": etiqueta,
+        "archivo": os.path.basename(ruta),
+        "campos": campos,
+        "texto": texto,
+    }
+    ruta_json = ruta[:-4] + ".json"
+    with open(ruta_json, "w", encoding="utf-8") as fh:
+        json.dump(meta, fh, ensure_ascii=False, indent=2)
+    _permiso(ruta)
+    _permiso(ruta_json)
+    return ruta, campos
+
+
+def _confirmar_guardado(ruta, campos):
+    nombres = {"negocio": "🏪 Negocio", "contacto": "👤 Contacto",
+               "whatsapp": "📱 WhatsApp", "ciudad": "📍 Ciudad",
+               "horario": "🕒 Horario", "pagos": "💳 Pagos",
+               "productos": "🧾 Productos"}
+    detalle = []
+    for k, titulo in nombres.items():
+        if campos.get(k):
+            detalle.append(f"{titulo}: {html.escape(campos[k][:90])}")
+    rel = os.path.relpath(ruta, DIARIO)
+    extra = ("\n\n" + "\n".join(detalle)) if detalle else ""
+    return (f"✅ <b>Datos guardados</b>\n\n"
+            f"📂 <code>{rel}</code>{extra}\n\n"
+            f"Quedó en la carpeta privada del proyecto. Si falta algo, "
+            f"sigue enviándolo o usa <code>/captura</code>.")
+
+
+def _leer_captura():
+    try:
+        with open(ARCHIVO_CAPTURA, encoding="utf-8") as fh:
+            return json.load(fh)
+    except Exception:
+        return None
+
+
+def _guardar_captura(d):
+    os.makedirs(os.path.dirname(ARCHIVO_CAPTURA), exist_ok=True)
+    with open(ARCHIVO_CAPTURA, "w", encoding="utf-8") as fh:
+        json.dump(d, fh, ensure_ascii=False)
+
+
+def _borrar_captura():
+    try:
+        os.remove(ARCHIVO_CAPTURA)
+    except OSError:
+        pass
+
+
+def cmd_solicitud(arg=""):
+    a = (arg or "").lower()
+    if "corta" in a or "breve" in a or "rapida" in a:
+        return SOLICITUD_CORTA
+    return SOLICITUD_COMPLETA
+
+
+def cmd_captura(arg=""):
+    cap = _leer_captura()
+    if cap:
+        return ("⚠️ <b>Ya hay una captura abierta</b>\n\n"
+                f"Mensajes guardados: {cap.get('mensajes', 0)}\n"
+                "Sigue enviando datos o escribe <code>/fin</code> para archivar.")
+    _preparar_dirs()
+    base = _ahora().strftime("_borrador_%Y%m%d_%H%M%S")
+    ruta = os.path.join(DIR_ENTRADAS, base + ".txt")
+    open(ruta, "w", encoding="utf-8").close()
+    _permiso(ruta)
+    _guardar_captura({"archivo": ruta, "inicio": _ahora().isoformat(timespec="seconds"),
+                      "mensajes": 0})
+    return ("🎙 <b>CAPTURA ACTIVADA</b>\n\n"
+            "Envíame los datos en uno o varios mensajes. Todo se guarda en "
+            "un solo archivo.\n\n"
+            "Cuando termines: <code>/fin</code>\n"
+            "Para descartar: <code>/cancelar</code>")
+
+
+def _agregar_captura(texto):
+    cap = _leer_captura()
+    if not cap:
+        return None
+    texto = _texto_limpio(texto)
+    if not texto:
+        return None
+    n = int(cap.get("mensajes", 0)) + 1
+    with open(cap["archivo"], "a", encoding="utf-8") as fh:
+        fh.write(f"\n--- mensaje {n} · {_ahora().strftime('%Y-%m-%d %H:%M')} ---\n")
+        fh.write(texto + "\n")
+    cap["mensajes"] = n
+    cap["actualizado"] = _ahora().isoformat(timespec="seconds")
+    _guardar_captura(cap)
+    return (f"📥 Guardado en el borrador ({n} mensaje{'s' if n != 1 else ''}).\n"
+            "Sigue enviando o escribe <code>/fin</code> para archivar.")
+
+
+def cmd_fin():
+    cap = _leer_captura()
+    if not cap:
+        return ("No hay una captura abierta.\n\n"
+                "Abre una con <code>/captura</code> o guarda un mensaje "
+                "suelto con <code>/datos</code>.")
+    ruta = cap.get("archivo", "")
+    try:
+        with open(ruta, encoding="utf-8") as fh:
+            contenido = fh.read()
+    except OSError:
+        contenido = ""
+    try:
+        os.remove(ruta)
+    except OSError:
+        pass
+    _borrar_captura()
+    if len(contenido.strip()) < 5:
+        return "🗑 La captura estaba vacía. No se guardó nada."
+    destino, campos = _guardar_entrada(contenido, "Telegram (captura)")
+    if not destino:
+        return "⚠ No pude guardar la captura."
+    return _confirmar_guardado(destino, campos)
+
+
+def cmd_cancelar():
+    cap = _leer_captura()
+    if not cap:
+        return "No hay una captura abierta."
+    try:
+        os.remove(cap.get("archivo", ""))
+    except OSError:
+        pass
+    _borrar_captura()
+    return "🗑 Captura cancelada. No se guardó nada."
+
+
+def cmd_datos(arg=""):
+    a = (arg or "").strip()
+    if not a:
+        cap = _leer_captura()
+        estado = (f"Hay una captura abierta ({cap.get('mensajes', 0)} mensajes). "
+                  "Escribe <code>/fin</code> para archivarla."
+                  if cap else "No hay captura abierta.")
+        return ("📥 <b>GUARDAR DATOS DE UN CLIENTE</b>\n\n"
+                "<b>Una sola vez:</b>\n"
+                "<code>/datos Nombre: ... / WhatsApp: ... / Productos: ...</code>\n\n"
+                "<b>Por partes (recomendado):</b>\n"
+                "<code>/captura</code> → envía los datos → <code>/fin</code>\n\n"
+                "También puedes pegar la ficha completa sin comando: si trae "
+                "varios campos, la guardo automáticamente.\n\n"
+                f"ℹ️ {estado}")
+    low = a.lower()
+    if low in ("fin", "terminar", "listo"):
+        return cmd_fin()
+    if low in ("cancelar", "borrar", "descartar"):
+        return cmd_cancelar()
+    if low in ("iniciar", "captura", "empezar"):
+        return cmd_captura()
+    destino, campos = _guardar_entrada(a, "Telegram (/datos)")
+    if not destino:
+        return "⚠ No había texto para guardar."
+    return _confirmar_guardado(destino, campos)
+
+
+def _guardar_adjunto(file_id, nombre_sugerido):
+    """Descarga una foto o documento a la carpeta privada de entradas."""
+    _preparar_dirs()
+    try:
+        d = tg("getFile", file_id=file_id)
+        if not d or not d.get("ok"):
+            return None
+        ruta_tg = d["result"]["file_path"]
+        nombre = os.path.basename(nombre_sugerido or ruta_tg)
+        nombre = re.sub(r"[^A-Za-z0-9._-]+", "_", nombre)[:80] or "archivo"
+        base = _ahora().strftime("%Y%m%d_%H%M%S_") + nombre
+        destino = os.path.join(DIR_ADJUNTOS, base)
+        url = f"https://api.telegram.org/file/bot{TOKEN}/{ruta_tg}"
+        total = 0
+        with urllib.request.urlopen(url, timeout=120) as r, open(destino, "wb") as fh:
+            while True:
+                trozo = r.read(65536)
+                if not trozo:
+                    break
+                total += len(trozo)
+                if total > MAX_ADJUNTO:
+                    fh.close()
+                    os.remove(destino)
+                    return None
+                fh.write(trozo)
+        _permiso(destino)
+        return destino
+    except Exception as e:
+        print("adjunto:", e)
+        return None
+
+
+def procesar_adjunto(msg):
+    foto = msg.get("photo") or []
+    doc = msg.get("document") or {}
+    if foto:
+        file_id = foto[-1].get("file_id")
+        nombre = f"foto_{int(time.time())}.jpg"
+    elif doc:
+        file_id = doc.get("file_id")
+        nombre = doc.get("file_name") or f"archivo_{int(time.time())}"
+    else:
+        return None
+    if not file_id:
+        return "⚠ No pude identificar el archivo."
+    destino = _guardar_adjunto(file_id, nombre)
+    if not destino:
+        return "⚠ No pude guardar el archivo (puede pesar más de 20 MB)."
+    leyenda = _texto_limpio(msg.get("caption") or "")
+    if leyenda:
+        try:
+            with open(destino + ".txt", "w", encoding="utf-8") as fh:
+                fh.write(leyenda + "\n")
+            _permiso(destino + ".txt")
+        except OSError:
+            pass
+    cap = _leer_captura()
+    if cap:
+        try:
+            with open(cap["archivo"], "a", encoding="utf-8") as fh:
+                fh.write(f"\n--- adjunto: {os.path.basename(destino)} ---\n")
+                if leyenda:
+                    fh.write(leyenda + "\n")
+            cap["mensajes"] = int(cap.get("mensajes", 0)) + 1
+            _guardar_captura(cap)
+        except OSError:
+            pass
+    rel = os.path.relpath(destino, DIARIO)
+    extra = ""
+    if leyenda and not cap and _parece_ficha(leyenda):
+        ruta_txt, campos = _guardar_entrada(
+            leyenda, f"Telegram (adjunto: {os.path.basename(destino)})")
+        if ruta_txt:
+            extra = ("\n\nLos datos del texto también quedaron guardados:\n"
+                     f"<code>{os.path.relpath(ruta_txt, DIARIO)}</code>")
+    return (f"📎 <b>Archivo guardado</b>\n\n"
+            f"📂 <code>{rel}</code>\n"
+            + ("Se sumó al borrador de la captura.\n" if cap else "")
+            + "Si es el logo o fotos del cliente, quedó en su carpeta privada."
+            + extra)
+
+
 def cmd_estado():
     web = sh("curl -s -o /dev/null -w '%{http_code}' --max-time 8 http://127.0.0.1/tienda.html").strip()
     ext = sh("curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://" + IP + "/tienda.html").strip()
@@ -167,6 +620,7 @@ def cmd_estado():
     ram = sh("free -m | awk '/Mem:/{print $7\" MB de \"$2\" libres\"}'").strip()
     nres = sh("ls -1 /var/backups/marketattack/*.tar.gz 2>/dev/null | wc -l").strip()
     ult = sh("ls -1t /var/backups/marketattack/*.tar.gz 2>/dev/null | head -1 | xargs -r ls -lh | awk '{print $6\" \"$7\" \"$8}'").strip()
+    nent = len(glob.glob(os.path.join(DIR_ENTRADAS, "cliente_*.txt")))
     srv = sh("systemctl is-active opencode").strip()
     puent = sh("systemctl is-active puente-telegram").strip()
     return (f"📊 <b>ESTADO</b>\n\n"
@@ -174,6 +628,7 @@ def cmd_estado():
             f"Web internet: <b>{ext}</b> {'✅' if ext == '200' else '❌'}\n"
             f"opencode: <b>{srv}</b> · puente: <b>{puent}</b>\n\n"
             f"💾 {disco}\n🧠 {ram}\n🗄 Respaldos: {nres} · último {ult or '—'}\n"
+            f"📥 Entradas de clientes: {nent}\n"
             f"🕒 Copia diaria 3:00 AM (sin PC)")
 
 
@@ -492,6 +947,16 @@ def procesar(txt):
         c = c.lower()
         if c in ("/start", "/ayuda", "ayuda", "?"):
             return AYUDA
+        if c in ("/solicitud", "/pedir", "/ficha"):
+            return cmd_solicitud(arg)
+        if c in ("/datos", "/guardar"):
+            return cmd_datos(arg)
+        if c == "/captura":
+            return cmd_captura(arg)
+        if c in ("/fin", "/terminar"):
+            return cmd_fin()
+        if c in ("/cancelar", "/descartar"):
+            return cmd_cancelar()
         if c == "/cliente":
             if not arg.strip():
                 return FORMATO
@@ -553,6 +1018,15 @@ def procesar(txt):
                {"parts": [{"type": "text", "text": txt}]}, timeout=1800)
         s = "\n".join(p.get("text", "") for p in r.get("parts", []) if p.get("type") == "text")
         return s or "Listo. He ejecutado lo que pediste."
+    cap = _leer_captura()
+    if cap:
+        r = _agregar_captura(txt)
+        if r:
+            return r
+    if _parece_ficha(txt):
+        destino, campos = _guardar_entrada(txt, "Telegram (ficha automática)")
+        if destino:
+            return _confirmar_guardado(destino, campos)
     auto = intento_prospecto(txt)
     if auto:
         return auto
@@ -591,11 +1065,12 @@ def main():
             msg = u.get("message") or {}
             chat = (msg.get("chat") or {}).get("id")
             t = (msg.get("text") or "").strip()
-            if not t or chat != int(CHAT):
+            tiene_adj = bool(msg.get("photo") or msg.get("document"))
+            if chat != int(CHAT) or (not t and not tiene_adj):
                 continue
-            print(">", t[:70])
+            print(">", (t or "[adjunto]")[:70])
             try:
-                res = procesar(t)
+                res = procesar_adjunto(msg) if tiene_adj else procesar(t)
                 if res:
                     enviar(res)
             except Exception as e:

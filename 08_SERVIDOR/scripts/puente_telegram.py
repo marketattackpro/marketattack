@@ -518,8 +518,11 @@ def cmd_datos(arg=""):
                   "Escribe <code>/fin</code> para archivarla."
                   if cap else "No hay captura abierta.")
         return ("📥 <b>GUARDAR DATOS DE UN CLIENTE</b>\n\n"
-                "<b>Una sola vez:</b>\n"
-                "<code>/datos Nombre: ... / WhatsApp: ... / Productos: ...</code>\n\n"
+                "<b>En un solo mensaje:</b>\n"
+                "<code>/datos\n"
+                "Nombre del negocio: ...\n"
+                "WhatsApp: ...\n"
+                "Productos: ...</code>\n\n"
                 "<b>Por partes (recomendado):</b>\n"
                 "<code>/captura</code> → envía los datos → <code>/fin</code>\n\n"
                 "También puedes pegar la ficha completa sin comando: si trae "
@@ -951,8 +954,9 @@ def intento_prospecto(txt):
 
 def procesar(txt):
     if txt.startswith("/"):
-        c, _, arg = txt.partition(" ")
-        c = c.lower()
+        m = re.match(r"^(\S+)(?:\s+(.*))?$", txt, re.S)
+        c = (m.group(1) if m else txt).lower()
+        arg = (m.group(2) or "").strip() if m else ""
         if c in ("/start", "/ayuda", "ayuda", "?"):
             return AYUDA
         if c in ("/solicitud", "/pedir", "/ficha"):

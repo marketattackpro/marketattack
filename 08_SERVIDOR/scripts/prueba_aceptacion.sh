@@ -198,6 +198,45 @@ SAL=$(/usr/local/bin/verificar_tienda.sh todas 2>&1); rc=$?
 [ "$rc" -eq 0 ] && ok "todas las tiendas siguen aprobadas" || mal "alguna tienda quedó con problemas"
 [ "$rc" -eq 0 ] || echo "$SAL" | sed 's/^/     /'
 
+# ── 8) recepción de datos por Telegram ──
+paso "8) recepción de datos por Telegram"
+python3 - <<'PY' && ok "guarda fichas, capturas, adjuntos y limpia" || mal "la recepción de datos por Telegram falló"
+import importlib.util, os, glob, tempfile, shutil
+spec = importlib.util.spec_from_file_location("pt", "/usr/local/bin/puente_telegram.py")
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+tmp = tempfile.mkdtemp(prefix="ma_tg_")
+m.DIR_ENTRADAS = os.path.join(tmp, "entradas")
+m.DIR_ADJUNTOS = os.path.join(tmp, "adjuntos")
+m.ARCHIVO_CAPTURA = os.path.join(tmp, "captura.json")
+try:
+    ficha = ("Nombre del negocio: Prueba Telegram\n"
+             "WhatsApp para pedidos: 3001234567\n"
+             "Ciudad: Soacha\n"
+             "Horario: Lun-Sab 6am-8pm\n"
+             "Productos: Pan | 2000 | Caliente\n"
+             "Métodos de pago: Nequi")
+    assert m._parece_ficha(ficha)
+    assert not m._parece_ficha("Hola, ¿cómo estás?")
+    r = m.procesar(ficha)
+    assert "Datos guardados" in r, r
+    assert len(glob.glob(os.path.join(m.DIR_ENTRADAS, "cliente_*.txt"))) == 1
+    assert len(glob.glob(os.path.join(m.DIR_ENTRADAS, "cliente_*.json"))) == 1
+    r = m.procesar("/datos\nNombre del negocio: Prueba Dos\nWhatsApp: 3002223344\n"
+                   "Ciudad: Bogotá\nProductos: Café | 3000 | Caliente")
+    assert "Datos guardados" in r, r
+    assert "CAPTURA ACTIVADA" in m.procesar("/captura")
+    assert "Guardado" in m.procesar("Nombre del negocio: Prueba Captura")
+    assert "Guardado" in m.procesar("WhatsApp: 3003334455")
+    assert "Datos guardados" in m.procesar("/fin")
+    assert "CAPTURA ACTIVADA" in m.procesar("/captura")
+    assert "cancelada" in m.procesar("/cancelar")
+    assert m._leer_captura() is None
+    assert not glob.glob(os.path.join(m.DIR_ENTRADAS, "_borrador_*.txt"))
+    print("     ficha, /datos, captura y cancelación OK")
+finally:
+    shutil.rmtree(tmp, ignore_errors=True)
+PY
+
 # ── resultado ──
 fin=$(date +%s)
 echo ""

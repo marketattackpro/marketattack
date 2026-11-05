@@ -89,4 +89,7 @@ La recepción se probó con una ficha temporal:
 - Se detectaron negocio, WhatsApp, ciudad, horario, productos y pagos.
 - Se archivó una captura de dos mensajes en un solo archivo.
 - Se canceló una captura sin dejar basura.
-- Los archivos de prueba se borraron después.
+- Se descargó un adjunto real desde Telegram (foto) y se borró después.
+- Los archivos de prueba se borraron.
+- La prueba de aceptación incluye el bloque **8) recepción de datos por
+  Telegram** y trabaja en una carpeta temporal para no tocar datos reales.

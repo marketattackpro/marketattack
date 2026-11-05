@@ -817,7 +817,10 @@ restauró un snapshot viejo desde el espejo `/home/personalamd/.../02_DEMO` y **
   con fecha; no se usa ninguna ruta enviada por el usuario.
 - Documentos actualizados: `SOLICITUD_INICIO_CLIENTE.md`,
   `SOLICITUD_CORTA.md`, `FICHA_CLIENTE.md`, `RECEPCION_DATOS_TELEGRAM.md`.
-- Probado con ficha temporal, captura de dos mensajes y cancelación; los
-  archivos de prueba se borraron. Falta la prueba real enviando datos desde
-  el celular.
+- Probado con ficha temporal, `/datos`, captura de dos mensajes, adjunto real
+  descargado desde Telegram y cancelación; los archivos de prueba se borraron.
+- La prueba de aceptación ahora incluye el bloque **8) recepción de datos por
+  Telegram** y corre aislada en una carpeta temporal.
+- Respaldo de esta mejora: `completo_20261105_0058.tar.gz` (35 copias en las
+  vías A y B). GitHub y PC se actualizan al cerrar el cambio.
 

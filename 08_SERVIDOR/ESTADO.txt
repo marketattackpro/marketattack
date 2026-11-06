@@ -1,4 +1,4 @@
-RESPALDO=20261105_0131
+RESPALDO=20261106_0000
 SERVIDOR=157.137.203.223
 proyecto=/var/www/marketattack
 servicios:
@@ -6,4 +6,4 @@ servicios:
   opencode = active
   puente-telegram = active
 tamanos:
-/dev/sda1        45G  6.6G   38G  15% /
+/dev/sda1        45G  6.7G   38G  16% /
